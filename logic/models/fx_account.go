@@ -25,6 +25,13 @@ type FxAccount struct {
 	UpdatedAt      int64   `xorm:"not null default 0 int"`
 }
 
+type FxAccountStatus struct {
+	ID        int64  `xorm:"pk autoincr"`
+	UnionId   string `xorm:"not null default '' varchar(128) unique"`
+	CreatedAt int64  `xorm:"not null default 0 int"`
+	UpdatedAt int64  `xorm:"not null default 0 int"`
+}
+
 type FxAccountMonthAchievement struct {
 	ID                   int64   `xorm:"pk autoincr"`
 	UnionId              string  `xorm:"not null default '' varchar(128) unique(uni_user_month)"`
