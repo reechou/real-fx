@@ -84,7 +84,7 @@ func UpdateFxAccountStatus(info *FxAccount) error {
 
 func UpdateFxAccountSalesman(info *FxAccount) error {
 	info.UpdatedAt = time.Now().Unix()
-	_, err := x.Cols("ticket", "phone", "name", "updated_at").Update(info, &FxAccount{UnionId: info.UnionId})
+	_, err := x.Cols("ticket", "phone", "updated_at").Update(info, &FxAccount{UnionId: info.UnionId})
 	return err
 }
 

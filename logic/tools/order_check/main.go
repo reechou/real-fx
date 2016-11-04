@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/reechou/real-fx/config"
+	"github.com/reechou/real-fx/logic/tools/order_check/config"
 	"github.com/reechou/real-fx/logic/tools/order_check/controller"
 )
 

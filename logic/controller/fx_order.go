@@ -23,7 +23,7 @@ func (daemon *Daemon) CreateFxOrder(info *models.FxOrder) error {
 
 	var levelReturns []float32
 	for i := 0; i < len(daemon.cfg.LevelPer); i++ {
-		lReturn := info.ReturnMoney * float32(daemon.cfg.LevelPer[i])/100.0
+		lReturn := info.ReturnMoney * float32(daemon.cfg.LevelPer[i])/100.0 * float32(daemon.cfg.Score.EnlargeScale)
 		levelReturns = append(levelReturns, lReturn)
 	}
 

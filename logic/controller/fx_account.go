@@ -16,6 +16,16 @@ func (daemon *Daemon) CreateFxAccount(fxAccount *models.FxAccount, fxAccountFoll
 		logrus.Errorf("create fx account error: %v", err)
 		return err
 	}
+	if fxAccount.Superior != "" {
+		superFxAccount := &models.FxAccount{
+			UnionId: fxAccount.Superior,
+		}
+		err := models.AddFxAccountMoney(float32(daemon.cfg.Score.FollowScore), superFxAccount)
+		if err != nil {
+			logrus.Errorf("add super fx account money error: %v", err)
+			return err
+		}
+	}
 	if err := models.CreateFxAccountFollow(fxAccountFollow); err != nil {
 		logrus.Errorf("create fx account follow error: %v", err)
 		return err

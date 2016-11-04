@@ -3,10 +3,13 @@ package controller
 import (
 	"sync"
 	"time"
+	"fmt"
 	
 	"github.com/Sirupsen/logrus"
-	"github.com/reechou/real-fx/config"
-	"github.com/reechou/real-fx/logic/models"
+	"github.com/reechou/real-fx/logic/tools/order_check/config"
+	"github.com/reechou/real-fx/logic/tools/order_check/fx_models"
+	"github.com/reechou/real-fx/logic/tools/order_check/models"
+	"github.com/reechou/real-fx/utils"
 )
 
 type OrderCheck struct {
@@ -20,12 +23,20 @@ type OrderCheck struct {
 }
 
 func NewOrderCheck(cfg *config.Config) *OrderCheck {
+	if cfg.Debug {
+		utils.EnableDebug()
+	}
+	
 	ocw := &OrderCheck{
 		cfg:  cfg,
 		stop: make(chan struct{}),
 		done: make(chan struct{}),
 	}
 	ocw.sw = NewSettlementWorker(cfg.WorkerInfo.SWMaxWorker, cfg.WorkerInfo.SWMaxChanLen, cfg)
+	
+	fx_models.InitDB(cfg)
+	models.InitDB(cfg)
+	
 	return ocw
 }
 
@@ -35,6 +46,8 @@ func (ocw *OrderCheck) Stop() {
 }
 
 func (ocw *OrderCheck) Run() {
+	logrus.Debugf("start run order check...")
+	ocw.runCheck()
 	for {
 		select {
 		case <-time.After(time.Duration(ocw.cfg.WorkerInfo.OrderCheckInterval) * time.Second):
@@ -47,19 +60,38 @@ func (ocw *OrderCheck) Run() {
 }
 
 func (ocw *OrderCheck) runCheck() {
-	err := models.IterateFxWaitOrder(FX_ORDER_SETTLEMENT, ocw.handleOrder)
+	err := fx_models.IterateFxWaitOrder(FX_ORDER_WAIT, ocw.handleOrder)
 	if err != nil {
 		logrus.Errorf("run check error: %v", err)
 	}
 }
 
 func (ocw *OrderCheck) handleOrder(idx int, bean interface{}) error {
-	order := bean.(*models.FxOrder)
+	order := bean.(*fx_models.FxOrder)
+	logrus.Debugf("order[%v] checking.", order)
 	// check order status
+	taobaoOrder := &models.TaobaoOrder{
+		OrderId: order.OrderId,
+	}
+	has, err := models.GetTaobaoOrder(taobaoOrder)
+	if err != nil {
+		logrus.Errorf("get taobao order[%s] error: %v", order.OrderId, err)
+		return err
+	}
+	if !has {
+		logrus.Errorf("get taobao order no this order[%s]", order.OrderId)
+		return fmt.Errorf("get taobao order no this order[%s]", order.OrderId)
+	}
 	
-	if order.Status == FX_ORDER_SUCCESS {
+	if taobaoOrder.GoodsState == TAOBAO_ORDER_SUCCESS {
 		// do settlement
 		ocw.sw.SettlementOrder(order)
+	} else if taobaoOrder.GoodsState == TAOBAO_ORDER_INVALID {
+		order.Status = FX_ORDER_FAILED
+		err = fx_models.UpdateFxOrderStatus(order)
+		if err != nil {
+			logrus.Errorf("order[%s] update status error.", order.OrderId)
+		}
 	}
 	
 	return nil
