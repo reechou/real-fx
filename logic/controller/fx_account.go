@@ -66,6 +66,14 @@ func (daemon *Daemon) GetFxAccount(fxAccount *models.FxAccount) error {
 	return nil
 }
 
+func (daemon *Daemon) GetLowerPeopleCount(unionId string) (int64, error) {
+	return models.GetLowerPeopleCount(unionId)
+}
+
+func (daemon *Daemon) GetLowerPeopleList(unionId string, offset, num int64) ([]models.FxAccount, error) {
+	return models.GetLowerPeople(unionId, offset, num)
+}
+
 func (daemon *Daemon) CreateFxAccountFollow(info *models.FxAccountFollow) error {
 	return models.CreateFxAccountFollow(info)
 }

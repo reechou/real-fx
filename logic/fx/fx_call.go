@@ -174,3 +174,41 @@ func (fxr *FXRouter) getFxAccountFollow(ctx context.Context, w http.ResponseWrit
 
 	return utils.WriteJSON(w, http.StatusOK, rsp)
 }
+
+func (fxr *FXRouter) getFxLowerPeopleList(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+	if err := utils.ParseForm(r); err != nil {
+		return err
+	}
+
+	req := &getFxLowerPeopleListReq{}
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		return err
+	}
+
+	rsp := &FxResponse{Code: RspCodeOK}
+
+	type FxLowerPeopleList struct {
+		Count int64              `json:"count"`
+		List  []models.FxAccount `json:"list"`
+	}
+	count, err := fxr.backend.GetLowerPeopleCount(req.UnionId)
+	if err != nil {
+		logrus.Errorf("Error get fx lower people list count: %v", err)
+		rsp.Code = RspCodeErr
+		rsp.Msg = fmt.Sprintf("Error get fx lower people list count: %v", err)
+	} else {
+		list, err := fxr.backend.GetLowerPeopleList(req.UnionId, req.Offset, req.Num)
+		if err != nil {
+			logrus.Errorf("Error get fx lower people list: %v", err)
+			rsp.Code = RspCodeErr
+			rsp.Msg = fmt.Sprintf("Error get fx lower people list: %v", err)
+		} else {
+			var listInfo FxLowerPeopleList
+			listInfo.Count = count
+			listInfo.List = list
+			rsp.Data = listInfo
+		}
+	}
+
+	return utils.WriteJSON(w, http.StatusOK, rsp)
+}

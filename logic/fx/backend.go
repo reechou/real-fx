@@ -13,6 +13,8 @@ type fxAccountBackend interface {
 	CreateFxAccountFollow(info *models.FxAccountFollow) error
 	UpdateFxAccountFollowStatus(info *models.FxAccountFollow) error
 	GetFxAccountFollow(info *models.FxAccountFollow) error
+	GetLowerPeopleCount(unionId string) (int64, error)
+	GetLowerPeopleList(unionId string, offset, num int64) ([]models.FxAccount, error)
 }
 
 type fxTeamBackend interface {

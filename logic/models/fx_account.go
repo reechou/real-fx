@@ -127,6 +127,25 @@ func GetFxAccountById(info *FxAccount) (bool, error) {
 	return true, nil
 }
 
+func GetLowerPeopleCount(unionId string) (int64, error) {
+	count, err := x.Where("superior = ?", unionId).Count(&FxAccount{})
+	if err != nil {
+		logrus.Errorf("union_id[%s] get lower peoples list count error: %v", unionId, err)
+		return 0, err
+	}
+	return count, nil
+}
+
+func GetLowerPeople(unionId string, offset, num int64) ([]FxAccount, error) {
+	var lowerPeoples []FxAccount
+	err := x.Where("superior = ?", unionId).Limit(int(num), int(offset)).Find(&lowerPeoples)
+	if err != nil {
+		logrus.Errorf("union_id[%s] lower peoples list error: %v", unionId, err)
+		return nil, err
+	}
+	return lowerPeoples, nil
+}
+
 func CreateFxAccountFollow(info *FxAccountFollow) error {
 	if info.UnionId == "" || info.WXAccount == "" || info.OpenId == "" {
 		return fmt.Errorf("argvs cannot be nil.")

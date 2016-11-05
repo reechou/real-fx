@@ -40,6 +40,12 @@ type getFxAccountFollowReq struct {
 	OpenId    string `json:"openId"`
 }
 
+type getFxLowerPeopleListReq struct {
+	UnionId string `json:"unionId"`
+	Offset  int64  `json:"offset"`
+	Num     int64  `json:"num"`
+}
+
 type createFxTeamReq struct {
 	Name string `json:"name"`
 }
