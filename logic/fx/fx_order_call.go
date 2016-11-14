@@ -47,6 +47,7 @@ func (fxr *FXRouter) createFxOrder(ctx context.Context, w http.ResponseWriter, r
 			rsp.Msg = fmt.Sprintf("Error create fx order: %v", err)
 		}
 	}
+	rsp.Data = req.UnionId
 
 	return utils.WriteJSON(w, http.StatusOK, rsp)
 }

@@ -122,6 +122,36 @@ func (fxr *FXRouter) updateFxStatus(ctx context.Context, w http.ResponseWriter, 
 	return utils.WriteJSON(w, http.StatusOK, rsp)
 }
 
+func (fxr *FXRouter) updateFxSignTime(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+	if err := utils.ParseForm(r); err != nil {
+		return err
+	}
+	
+	req := &updateFxSignTimeReq{}
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		return err
+	}
+	
+	rsp := &FxResponse{Code: RspCodeOK}
+	
+	fxAccount := &models.FxAccount{
+		UnionId: req.UnionId,
+	}
+	affected, err := fxr.backend.UpdateFxAccountSignTime(fxAccount)
+	if err != nil {
+		logrus.Errorf("Error update fx sign time: %v", err)
+		rsp.Code = RspCodeErr
+		rsp.Msg = fmt.Sprintf("Error update fx sign time: %v", err)
+	} else {
+		if affected == 0 {
+			rsp.Code = RspCodeErr
+			rsp.Msg = fmt.Sprintf("今天已经签过到了哦!")
+		}
+	}
+	
+	return utils.WriteJSON(w, http.StatusOK, rsp)
+}
+
 func (fxr *FXRouter) getFxAccount(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {
 	if err := utils.ParseForm(r); err != nil {
 		return err

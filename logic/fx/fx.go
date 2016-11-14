@@ -28,9 +28,13 @@ func (fxr *FXRouter) initRoutes() {
 		router.NewPostRoute("/fx/create_fx_salesman", fxr.createFxSalesman),
 		router.NewPostRoute("/fx/update_fx_baseinfo", fxr.updateFxBaseInfo),
 		router.NewPostRoute("/fx/update_fx_status", fxr.updateFxStatus),
+		router.NewPostRoute("/fx/fx_sign", fxr.updateFxSignTime),
 		router.NewPostRoute("/fx/get_fx_accout", fxr.getFxAccount),
 		router.NewPostRoute("/fx/get_fx_accout_unionid", fxr.getFxAccountFollow),
 		router.NewPostRoute("/fx/get_fx_lower_people_list", fxr.getFxLowerPeopleList),
+		// about fx account history
+		router.NewPostRoute("/fx/get_fx_history", fxr.getFxAccountHistoryList),
+		router.NewPostRoute("/fx/get_fx_history_by_type", fxr.getFxAccountHistoryListByType),
 		// about fx team
 		router.NewPostRoute("/fx/create_fx_team", fxr.createFxTeam),
 		router.NewPostRoute("/fx/create_fx_team_member", fxr.createFxTeamMember),

@@ -25,6 +25,7 @@ type SettlementCommission struct {
 type Score struct {
 	EnlargeScale int
 	FollowScore  int
+	SignScore    int
 }
 
 type WorkerInfo struct {

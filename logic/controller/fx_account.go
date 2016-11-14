@@ -2,7 +2,8 @@ package controller
 
 import (
 	"fmt"
-	
+	"time"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/reechou/real-fx/logic/models"
 )
@@ -25,6 +26,14 @@ func (daemon *Daemon) CreateFxAccount(fxAccount *models.FxAccount, fxAccountFoll
 			logrus.Errorf("add super fx account money error: %v", err)
 			return err
 		}
+		h := models.FxAccountHistory{
+			UnionId:    fxAccount.UnionId,
+			Score:      float32(daemon.cfg.Score.FollowScore),
+			ChangeType: int64(FX_HISTORY_TYPE_INVITE),
+			ChangeDesc: FxHistoryDescs[FX_HISTORY_TYPE_INVITE],
+			CreatedAt:  time.Now().Unix(),
+		}
+		models.CreateFxAccountHistoryList([]models.FxAccountHistory{h})
 	}
 	if err := models.CreateFxAccountFollow(fxAccountFollow); err != nil {
 		logrus.Errorf("create fx account follow error: %v", err)
@@ -49,8 +58,27 @@ func (daemon *Daemon) UpdateFxAccountBaseInfo(fxAccount *models.FxAccount, fxAcc
 }
 
 func (daemon *Daemon) UpdateFxAccountStatus(fxAccount *models.FxAccount) error {
-
 	return models.UpdateFxAccountStatus(fxAccount)
+}
+
+func (daemon *Daemon) UpdateFxAccountSignTime(fxAccount *models.FxAccount) (int64, error) {
+	affected, err := models.UpdateFxAccountSignTime(float32(daemon.cfg.Score.SignScore), fxAccount)
+	if err != nil {
+		return 0, err
+	}
+	if affected > 0 {
+		h := models.FxAccountHistory{
+			UnionId:    fxAccount.UnionId,
+			Score:      float32(daemon.cfg.Score.SignScore),
+			ChangeType: int64(FX_HISTORY_TYPE_SIGN),
+			ChangeDesc: FxHistoryDescs[FX_HISTORY_TYPE_SIGN],
+			CreatedAt:  time.Now().Unix(),
+		}
+		models.CreateFxAccountHistoryList([]models.FxAccountHistory{h})
+	}
+
+	return affected, nil
+
 }
 
 func (daemon *Daemon) GetFxAccount(fxAccount *models.FxAccount) error {

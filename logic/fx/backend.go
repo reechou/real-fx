@@ -9,12 +9,20 @@ type fxAccountBackend interface {
 	CreateSalesman(fxAccount *models.FxAccount) error
 	UpdateFxAccountBaseInfo(fxAccount *models.FxAccount, fxAccountFollow *models.FxAccountFollow) error
 	UpdateFxAccountStatus(fxAccount *models.FxAccount) error
+	UpdateFxAccountSignTime(fxAccount *models.FxAccount) (int64, error)
 	GetFxAccount(fxAccount *models.FxAccount) error
 	CreateFxAccountFollow(info *models.FxAccountFollow) error
 	UpdateFxAccountFollowStatus(info *models.FxAccountFollow) error
 	GetFxAccountFollow(info *models.FxAccountFollow) error
 	GetLowerPeopleCount(unionId string) (int64, error)
 	GetLowerPeopleList(unionId string, offset, num int64) ([]models.FxAccount, error)
+}
+
+type fxAccountHistoryBackend interface {
+	GetFxAccountHistoryListCount(unionId string) (int64, error)
+	GetFxAccountHistoryList(unionId string, offset, num int64) ([]models.FxAccountHistory, error)
+	GetFxAccountHistoryListByTypeCount(unionId string, cType int64) (int64, error)
+	GetFxAccountHistoryListByType(unionId string, cType, offset, num int64) ([]models.FxAccountHistory, error)
 }
 
 type fxTeamBackend interface {
@@ -49,6 +57,7 @@ type fxWithdrawalBackend interface {
 
 type Backend interface {
 	fxAccountBackend
+	fxAccountHistoryBackend
 	fxTeamBackend
 	fxOrderBackend
 	fxWithdrawalBackend

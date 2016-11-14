@@ -35,7 +35,8 @@ func InitDB(cfg *config.Config) {
 		new(FxOrder),
 		new(FxOrderSettlementRecord),
 		new(FxOrderWaitSettlementRecord),
-		new(WithdrawalRecord)); err != nil {
+		new(WithdrawalRecord),
+		new(FxAccountHistory)); err != nil {
 		logrus.Fatalf("Fail to sync database: %v", err)
 	}
 }

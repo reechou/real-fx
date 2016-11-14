@@ -31,6 +31,10 @@ type updateFxStatusReq struct {
 	Status  int64  `json:"status"`
 }
 
+type updateFxSignTimeReq struct {
+	UnionId string `json:"unionId"`
+}
+
 type getFxAccountReq struct {
 	UnionId string `json:"unionId"`
 }
@@ -44,6 +48,19 @@ type getFxLowerPeopleListReq struct {
 	UnionId string `json:"unionId"`
 	Offset  int64  `json:"offset"`
 	Num     int64  `json:"num"`
+}
+
+type getFxAccountHistoryListReq struct {
+	UnionId string `json:"unionId"`
+	Offset  int64  `json:"offset"`
+	Num     int64  `json:"num"`
+}
+
+type getFxAccountHistoryListByTypeReq struct {
+	UnionId string `json:"unionId"`
+	Offset  int64  `json:"offset"`
+	Num     int64  `json:"num"`
+	Type    int64  `json:"type"`
 }
 
 type createFxTeamReq struct {
