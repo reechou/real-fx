@@ -14,12 +14,13 @@ type WithdrawalRecord struct {
 	Balance         float32 `xorm:"not null default 0.000 decimal(9,3)"`
 	Status          int64   `xorm:"not null default 0 int"`
 	CreatedAt       int64   `xorm:"not null default 0 int"`
-	UpdatedAt       int64   `xorm:"not null default 0 int"`
+	UpdatedAt       int64   `xorm:"not null default 0 int index"`
 }
 
 func CreateWithdrawalRecord(info *WithdrawalRecord) error {
 	now := time.Now().Unix()
 	info.CreatedAt = now
+	info.UpdatedAt = now
 	_, err := x.Insert(info)
 	if err != nil {
 		logrus.Errorf("create fx withdrawal record union_id[%s] error: %v", info.UnionId, err)
@@ -29,14 +30,32 @@ func CreateWithdrawalRecord(info *WithdrawalRecord) error {
 	return nil
 }
 
+func GetMonthWithdrawalRecord(unionId string) (int64, error) {
+	timeStr := time.Now().Format("2006-01")
+	t, _ := time.Parse("2006-01", timeStr)
+	monthZero := t.Unix() - 8 * 3600
+	count, err := x.Where("union_id = ?", unionId).And("updated_at > ?", monthZero).Count(&WithdrawalRecord{})
+	if err != nil {
+		logrus.Errorf("get month withdrawal record error: %v", err)
+		return 0, err
+	}
+	return count, nil
+}
+
 func UpdateWithdrawalRecordStatus(info *WithdrawalRecord) error {
 	info.UpdatedAt = time.Now().Unix()
 	_, err := x.Cols("status", "updated_at").Update(info, &WithdrawalRecord{ID: info.ID})
 	return err
 }
 
-func GetWithdrawalRecordListCount(unionId string) (int64, error) {
-	count, err := x.Where("union_id = ?", unionId).Count(&WithdrawalRecord{})
+func GetWithdrawalRecordListCount(unionId string, status int64) (int64, error) {
+	var count int64
+	var err error
+	if status == 0 {
+		count, err = x.Where("union_id = ?", unionId).Count(&WithdrawalRecord{})
+	} else {
+		count, err = x.Where("union_id = ?", unionId).And("status = ?", status).Count(&WithdrawalRecord{})
+	}
 	if err != nil {
 		logrus.Errorf("union_id[%s] get withdrawal record list count error: %v", unionId, err)
 		return 0, err
@@ -53,9 +72,14 @@ func GetWithdrawalRecordListCountById(accountId int64) (int64, error) {
 	return count, nil
 }
 
-func GetWithdrawalRecordList(unionId string, offset, num int64) ([]WithdrawalRecord, error) {
+func GetWithdrawalRecordList(unionId string, offset, num, status int64) ([]WithdrawalRecord, error) {
 	var list []WithdrawalRecord
-	err := x.Where("union_id = ?", unionId).Limit(int(num), int(offset)).Find(&list)
+	var err error
+	if status == 0 {
+		err = x.Where("union_id = ?", unionId).Limit(int(num), int(offset)).Find(&list)
+	} else {
+		err = x.Where("union_id = ?", unionId).And("status = ?", status).Limit(int(num), int(offset)).Find(&list)
+	}
 	if err != nil {
 		logrus.Errorf("union_id[%s] get withdrawal record list error: %v", unionId, err)
 		return nil, err

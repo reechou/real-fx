@@ -70,7 +70,7 @@ func (ocw *OrderCheck) handleOrder(idx int, bean interface{}) error {
 	order := bean.(*fx_models.FxOrder)
 	logrus.Debugf("order[%v] checking.", order)
 	// check order status
-	taobaoOrder := &models.TaobaoOrder{
+	taobaoOrder := &models.TaobaoOrderReal{
 		OrderId: order.OrderId,
 	}
 	has, err := models.GetTaobaoOrder(taobaoOrder)
@@ -83,7 +83,7 @@ func (ocw *OrderCheck) handleOrder(idx int, bean interface{}) error {
 		return fmt.Errorf("get taobao order no this order[%s]", order.OrderId)
 	}
 	
-	if taobaoOrder.GoodsState == TAOBAO_ORDER_SUCCESS {
+	if taobaoOrder.GoodsState == TAOBAO_ORDER_SETTLEMENT {
 		// do settlement
 		ocw.sw.SettlementOrder(order)
 	} else if taobaoOrder.GoodsState == TAOBAO_ORDER_INVALID {

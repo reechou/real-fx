@@ -22,16 +22,16 @@ func (fxr *FXRouter) createFxWithdrawalRecord(ctx context.Context, w http.Respon
 	}
 
 	rsp := &FxResponse{Code: RspCodeOK}
-	
+
 	wInfo := &models.WithdrawalRecord{
-		UnionId: req.UnionId,
+		UnionId:         req.UnionId,
 		WithdrawalMoney: req.Money,
 	}
 	err := fxr.backend.CreateWithdrawalRecord(wInfo)
 	if err != nil {
 		logrus.Errorf("create withdrawal record[%v] error: %v", wInfo, err)
 		rsp.Code = RspCodeErr
-		rsp.Msg = fmt.Sprintf("create withdrawal record[%v] error: %v", wInfo, err)
+		rsp.Msg = err.Error()
 	}
 
 	return utils.WriteJSON(w, http.StatusOK, rsp)
@@ -53,13 +53,13 @@ func (fxr *FXRouter) getFxWithdrawalRecordList(ctx context.Context, w http.Respo
 		Count int64                     `json:"count"`
 		List  []models.WithdrawalRecord `json:"list"`
 	}
-	count, err := fxr.backend.GetWithdrawalRecordListCount(req.UnionId)
+	count, err := fxr.backend.GetWithdrawalRecordListCount(req.UnionId, req.Status)
 	if err != nil {
 		logrus.Errorf("Error get fx withdrawal record list count: %v", err)
 		rsp.Code = RspCodeErr
 		rsp.Msg = fmt.Sprintf("Error get fx withdrawal record list count: %v", err)
 	} else {
-		list, err := fxr.backend.GetWithdrawalRecordList(req.UnionId, req.Offset, req.Num)
+		list, err := fxr.backend.GetWithdrawalRecordList(req.UnionId, req.Offset, req.Num, req.Status)
 		if err != nil {
 			logrus.Errorf("Error get fx withdrawal record list: %v", err)
 			rsp.Code = RspCodeErr

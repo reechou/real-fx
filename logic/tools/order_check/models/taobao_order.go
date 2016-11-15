@@ -4,13 +4,13 @@ import (
 	"github.com/Sirupsen/logrus"
 )
 
-type TaobaoOrder struct {
+type TaobaoOrderReal struct {
 	ID         int64  `xorm:"id"`
 	OrderId    string `xorm:"orderId"`
 	GoodsState int64  `xorm:"goodsState"`
 }
 
-func GetTaobaoOrder(info *TaobaoOrder) (bool, error) {
+func GetTaobaoOrder(info *TaobaoOrderReal) (bool, error) {
 	has, err := x.Where("orderId = ?", info.OrderId).Get(info)
 	if err != nil {
 		logrus.Errorf("get taobao order error: %v", err)

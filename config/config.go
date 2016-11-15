@@ -28,6 +28,12 @@ type Score struct {
 	SignScore    int
 }
 
+type WithdrawalPolicy struct {
+	MonthWithdrawalTime int  // 月提现次数
+	MinimumWithdrawal   int  // 最低提现金额
+	IfWithdrawalCheck   bool // 是否自动提现
+}
+
 type WorkerInfo struct {
 	OrderCheckInterval int
 	SWMaxWorker        int
@@ -50,6 +56,7 @@ type Config struct {
 	SettlementCommission
 	WorkerInfo
 	Score
+	WithdrawalPolicy
 }
 
 func NewConfig() *Config {

@@ -18,19 +18,30 @@ const (
 )
 
 const (
-	WITHDRAWAL_WAITING = iota
-	WITHDRAWAL_DONE
+	WITHDRAWAL_DONE    = 1    // 提现完成
+	WITHDRAWAL_WAITING = 2    // 审核中
+	WITHDRAWAL_FAIL    = 3    // 提现失败
 )
 
+// 积分历史记录类型
 const (
-	FX_HISTORY_TYPE_SIGN = iota
-	FX_HISTORY_TYPE_INVITE
-	FX_HISTORY_TYPE_ORDER_0
-	FX_HISTORY_TYPE_ORDER_1
-	FX_HISTORY_TYPE_ORDER_2
-	FX_HISTORY_TYPE_WITHDRAWAL
+	FX_HISTORY_TYPE_SIGN = iota // 签到
+	FX_HISTORY_TYPE_INVITE      // 邀请
+	FX_HISTORY_TYPE_ORDER_0     // 订单主
+	FX_HISTORY_TYPE_ORDER_1     // 1级分销
+	FX_HISTORY_TYPE_ORDER_2     // 2级分销
+	FX_HISTORY_TYPE_WITHDRAWAL  // 提现
+	FX_HISTORY_TYPE_SCORE_MALL  // 积分商城
 )
 
 var (
-	FxHistoryDescs = []string{"每日签到", "邀请下线", "订单返积分", "一级分销积分", "二级分销积分"}
+	FxHistoryDescs = []string{
+		"每日签到",
+		"邀请下线",
+		"订单返积分",
+		"一级分销积分",
+		"二级分销积分",
+		"提现",
+		"积分商城",
+	}
 )

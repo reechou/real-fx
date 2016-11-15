@@ -49,9 +49,9 @@ type fxOrderBackend interface {
 
 type fxWithdrawalBackend interface {
 	CreateWithdrawalRecord(info *models.WithdrawalRecord) error
-	GetWithdrawalRecordListCount(unionId string) (int64, error)
+	GetWithdrawalRecordListCount(unionId string, status int64) (int64, error)
 	GetWithdrawalRecordListCountById(accountId int64) (int64, error)
-	GetWithdrawalRecordList(unionId string, offset, num int64) ([]models.WithdrawalRecord, error)
+	GetWithdrawalRecordList(unionId string, offset, num, status int64) ([]models.WithdrawalRecord, error)
 	GetWithdrawalRecordListById(accountId int64, offset, num int64) ([]models.WithdrawalRecord, error)
 }
 

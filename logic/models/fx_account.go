@@ -113,7 +113,11 @@ func AddFxAccountMoney(allAdd float32, info *FxAccount) error {
 	var err error
 	_, err = x.Exec("update fx_account set can_withdrawals=can_withdrawals+?, updated_at=? where union_id=?",
 		allAdd, info.UpdatedAt, info.UnionId)
-	return err
+	if err != nil {
+		return err
+	}
+	logrus.Infof("fx account[%s] add money[%f] success.", info.UnionId, allAdd)
+	return nil
 }
 
 func MinusFxAccountMoney(allMinus float32, info *FxAccount) error {
@@ -121,7 +125,11 @@ func MinusFxAccountMoney(allMinus float32, info *FxAccount) error {
 	var err error
 	_, err = x.Exec("update fx_account set can_withdrawals=can_withdrawals-?, updated_at=? where union_id=? and can_withdrawals >= ?",
 		allMinus, info.UpdatedAt, info.UnionId, allMinus)
-	return err
+	if err != nil {
+		return err
+	}
+	logrus.Infof("fx account[%s] minus money[%f] success.", info.UnionId, allMinus)
+	return nil
 }
 
 func GetFxAccount(info *FxAccount) (bool, error) {

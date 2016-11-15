@@ -47,7 +47,7 @@ func (fxr *FXRouter) initRoutes() {
 		router.NewPostRoute("/fx/get_fx_order_sr_list", fxr.getFxOrderSettlementRecordList),
 		router.NewPostRoute("/fx/get_fx_order_wait_sr_list", fxr.getFxOrderWaitSettlementRecordList),
 		// about withdrawal
-		router.NewPostRoute("/fx/create_fx_withdrawal_record", fxr.createFxWithdrawalRecord),
+		router.NewPostRoute("/fx/create_fx_withdrawal", fxr.createFxWithdrawalRecord),
 		router.NewPostRoute("/fx/get_fx_withdrawal_record", fxr.getFxWithdrawalRecordList),
 	}
 }
