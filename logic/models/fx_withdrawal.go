@@ -12,6 +12,7 @@ type WithdrawalRecord struct {
 	UnionId         string  `xorm:"not null default '' varchar(128) index"`
 	WithdrawalMoney float32 `xorm:"not null default 0.000 decimal(9,3)"`
 	Balance         float32 `xorm:"not null default 0.000 decimal(9,3)"`
+	OpenId          string  `xorm:"not null default '' varchar(128)"`
 	Status          int64   `xorm:"not null default 0 int"`
 	CreatedAt       int64   `xorm:"not null default 0 int"`
 	UpdatedAt       int64   `xorm:"not null default 0 int index"`
@@ -33,7 +34,7 @@ func CreateWithdrawalRecord(info *WithdrawalRecord) error {
 func GetMonthWithdrawalRecord(unionId string) (int64, error) {
 	timeStr := time.Now().Format("2006-01")
 	t, _ := time.Parse("2006-01", timeStr)
-	monthZero := t.Unix() - 8 * 3600
+	monthZero := t.Unix() - 8*3600
 	count, err := x.Where("union_id = ?", unionId).And("updated_at > ?", monthZero).Count(&WithdrawalRecord{})
 	if err != nil {
 		logrus.Errorf("get month withdrawal record error: %v", err)

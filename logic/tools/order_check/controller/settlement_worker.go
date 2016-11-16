@@ -80,7 +80,7 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 
 	var levelReturns []float32
 	for i := 0; i < len(sw.cfg.SettlementCommission.LevelPer); i++ {
-		lReturn := order.ReturnMoney * float32(sw.cfg.SettlementCommission.LevelPer[i])/100.0 * float32(sw.cfg.Score.EnlargeScale)
+		lReturn := order.ReturnMoney * float32(sw.cfg.SettlementCommission.LevelPer[i]) / 100.0 * float32(sw.cfg.Score.EnlargeScale)
 		levelReturns = append(levelReturns, lReturn)
 	}
 
@@ -104,7 +104,7 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 	//	logrus.Errorf("do settlement order[%v] update fx account month owner order error: %v", order, err)
 	//	return err
 	//}
-	
+
 	fxAccount := &fx_models.FxAccount{
 		UnionId: order.UnionId,
 	}
@@ -118,7 +118,7 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 		logrus.Errorf("do settlement no this owner account[%s]", order.UnionId)
 		return
 	}
-	
+
 	//var recordList []fx_models.FxOrderSettlementRecord
 	//recordList = append(recordList, fx_models.FxOrderSettlementRecord{
 	//	AccountId:   fxAccount.ID,
@@ -130,7 +130,7 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 	//	CreatedAt:   now,
 	//	UpdatedAt:   now,
 	//})
-	
+
 	var historyList []fx_models.FxAccountHistory
 	historyList = append(historyList, fx_models.FxAccountHistory{
 		AccountId:  fxAccount.ID,
@@ -140,7 +140,7 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 		ChangeDesc: FxHistoryDescs[FX_HISTORY_TYPE_ORDER_0],
 		CreatedAt:  now,
 	})
-	
+
 	unionId := fxAccount.Superior
 	for i := 1; i < len(levelReturns); i++ {
 		// get upper
@@ -186,7 +186,7 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 			AccountId:  fxAccount.ID,
 			UnionId:    fxAccount.UnionId,
 			Score:      levelReturns[i],
-			ChangeType: int64(FX_HISTORY_TYPE_ORDER_0+i),
+			ChangeType: int64(FX_HISTORY_TYPE_ORDER_0 + i),
 			ChangeDesc: FxHistoryDescs[FX_HISTORY_TYPE_ORDER_0+i],
 			CreatedAt:  now,
 		})

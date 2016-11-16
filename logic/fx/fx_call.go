@@ -126,14 +126,14 @@ func (fxr *FXRouter) updateFxSignTime(ctx context.Context, w http.ResponseWriter
 	if err := utils.ParseForm(r); err != nil {
 		return err
 	}
-	
+
 	req := &updateFxSignTimeReq{}
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 		return err
 	}
-	
+
 	rsp := &FxResponse{Code: RspCodeOK}
-	
+
 	fxAccount := &models.FxAccount{
 		UnionId: req.UnionId,
 	}
@@ -148,7 +148,7 @@ func (fxr *FXRouter) updateFxSignTime(ctx context.Context, w http.ResponseWriter
 			rsp.Msg = fmt.Sprintf("今天已经签过到了哦!")
 		}
 	}
-	
+
 	return utils.WriteJSON(w, http.StatusOK, rsp)
 }
 

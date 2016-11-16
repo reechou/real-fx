@@ -19,7 +19,7 @@ type DBInfo struct {
 
 type SettlementCommission struct {
 	LevelPerString []string
-	LevelPer []int
+	LevelPer       []int
 }
 
 type Score struct {
@@ -40,6 +40,10 @@ type WorkerInfo struct {
 	SWMaxChanLen       int
 }
 
+type WechatExtInfo struct {
+	HostURL string
+}
+
 type Config struct {
 	Debug       bool
 	Path        string
@@ -57,6 +61,7 @@ type Config struct {
 	WorkerInfo
 	Score
 	WithdrawalPolicy
+	WechatExtInfo
 }
 
 func NewConfig() *Config {
@@ -79,7 +84,7 @@ func NewConfig() *Config {
 		fmt.Printf("config MapTo error: %v\n", err)
 		os.Exit(1)
 	}
-	
+
 	for _, v := range c.SettlementCommission.LevelPerString {
 		vi, err := strconv.Atoi(v)
 		if err != nil {

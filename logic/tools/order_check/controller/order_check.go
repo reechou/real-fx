@@ -1,10 +1,10 @@
 package controller
 
 import (
+	"fmt"
 	"sync"
 	"time"
-	"fmt"
-	
+
 	"github.com/Sirupsen/logrus"
 	"github.com/reechou/real-fx/logic/tools/order_check/config"
 	"github.com/reechou/real-fx/logic/tools/order_check/fx_models"
@@ -14,7 +14,7 @@ import (
 
 type OrderCheck struct {
 	cfg *config.Config
-	
+
 	sw *SettlementWorker
 
 	wg   sync.WaitGroup
@@ -26,17 +26,17 @@ func NewOrderCheck(cfg *config.Config) *OrderCheck {
 	if cfg.Debug {
 		utils.EnableDebug()
 	}
-	
+
 	ocw := &OrderCheck{
 		cfg:  cfg,
 		stop: make(chan struct{}),
 		done: make(chan struct{}),
 	}
 	ocw.sw = NewSettlementWorker(cfg.WorkerInfo.SWMaxWorker, cfg.WorkerInfo.SWMaxChanLen, cfg)
-	
+
 	fx_models.InitDB(cfg)
 	models.InitDB(cfg)
-	
+
 	return ocw
 }
 
@@ -82,7 +82,7 @@ func (ocw *OrderCheck) handleOrder(idx int, bean interface{}) error {
 		logrus.Errorf("get taobao order no this order[%s]", order.OrderId)
 		return fmt.Errorf("get taobao order no this order[%s]", order.OrderId)
 	}
-	
+
 	if taobaoOrder.GoodsState == TAOBAO_ORDER_SETTLEMENT {
 		// do settlement
 		ocw.sw.SettlementOrder(order)
@@ -93,6 +93,6 @@ func (ocw *OrderCheck) handleOrder(idx int, bean interface{}) error {
 			logrus.Errorf("order[%s] update status error.", order.OrderId)
 		}
 	}
-	
+
 	return nil
 }

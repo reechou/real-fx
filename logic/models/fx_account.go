@@ -93,7 +93,7 @@ func UpdateFxAccountSignTime(allAdd float32, info *FxAccount) (int64, error) {
 	now := time.Now().Unix()
 	timeStr := time.Now().Format("2006-01-02")
 	t, _ := time.Parse("2006-01-02", timeStr)
-	dayZero := t.Unix() - 8 * 3600
+	dayZero := t.Unix() - 8*3600
 	result, err := x.Exec("update fx_account set can_withdrawals=can_withdrawals+?, updated_at=?, sign_time=? where union_id=? and sign_time < ?",
 		allAdd, now, now, info.UnionId, dayZero)
 	if err != nil {

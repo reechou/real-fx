@@ -152,14 +152,14 @@ func (fxr *FXRouter) getFxOrderWaitSettlementSum(ctx context.Context, w http.Res
 	if err := utils.ParseForm(r); err != nil {
 		return err
 	}
-	
+
 	req := &getFxOrderWaitSettlementSumReq{}
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 		return err
 	}
-	
+
 	rsp := &FxResponse{Code: RspCodeOK}
-	
+
 	fxAccount := &models.FxAccount{
 		UnionId: req.UnionId,
 	}
@@ -178,7 +178,7 @@ func (fxr *FXRouter) getFxOrderWaitSettlementSum(ctx context.Context, w http.Res
 			rsp.Data = sum
 		}
 	}
-	
+
 	return utils.WriteJSON(w, http.StatusOK, rsp)
 }
 
@@ -186,14 +186,14 @@ func (fxr *FXRouter) getFxOrderWaitSettlementRecordList(ctx context.Context, w h
 	if err := utils.ParseForm(r); err != nil {
 		return err
 	}
-	
+
 	req := &getFxOrderWaitSettlementRecordListReq{}
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 		return err
 	}
-	
+
 	rsp := &FxResponse{Code: RspCodeOK}
-	
+
 	fxAccount := &models.FxAccount{
 		UnionId: req.UnionId,
 	}
@@ -226,6 +226,6 @@ func (fxr *FXRouter) getFxOrderWaitSettlementRecordList(ctx context.Context, w h
 			}
 		}
 	}
-	
+
 	return utils.WriteJSON(w, http.StatusOK, rsp)
 }

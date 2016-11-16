@@ -26,6 +26,7 @@ func (fxr *FXRouter) createFxWithdrawalRecord(ctx context.Context, w http.Respon
 	wInfo := &models.WithdrawalRecord{
 		UnionId:         req.UnionId,
 		WithdrawalMoney: req.Money,
+		OpenId:          req.OpenId,
 	}
 	err := fxr.backend.CreateWithdrawalRecord(wInfo)
 	if err != nil {

@@ -3,16 +3,18 @@ package controller
 import (
 	"fmt"
 	"time"
-	
+
 	"github.com/Sirupsen/logrus"
+	"github.com/reechou/real-fx/logic/ext"
 	"github.com/reechou/real-fx/logic/models"
+	"strconv"
 )
 
 func (daemon *Daemon) CreateWithdrawalRecord(info *models.WithdrawalRecord) error {
 	if info.WithdrawalMoney < float32(daemon.cfg.WithdrawalPolicy.MinimumWithdrawal) {
 		return ErrWithdrawalMinimum
 	}
-	
+
 	fxAccount := &models.FxAccount{
 		UnionId: info.UnionId,
 	}
@@ -28,7 +30,7 @@ func (daemon *Daemon) CreateWithdrawalRecord(info *models.WithdrawalRecord) erro
 	if fxAccount.CanWithdrawals < info.WithdrawalMoney {
 		return ErrWithdrawalLimitBalance
 	}
-	
+
 	monthCount, err := models.GetMonthWithdrawalRecord(info.UnionId)
 	if err != nil {
 		logrus.Errorf("get month withdrawal record error: %v", err)
@@ -37,14 +39,14 @@ func (daemon *Daemon) CreateWithdrawalRecord(info *models.WithdrawalRecord) erro
 	if monthCount >= int64(daemon.cfg.WithdrawalPolicy.MonthWithdrawalTime) {
 		return ErrWithdrawalOverMonthLimit
 	}
-	
+
 	if daemon.cfg.WithdrawalPolicy.IfWithdrawalCheck {
 		err = models.MinusFxAccountMoney(info.WithdrawalMoney, fxAccount)
 		if err != nil {
 			logrus.Errorf("withdrawal money[%f] with account[%v] error: %v", info.WithdrawalMoney, fxAccount, err)
 			return err
 		}
-		
+
 		info.AccountId = fxAccount.ID
 		info.Status = WITHDRAWAL_DONE
 		info.Balance = fxAccount.CanWithdrawals - info.WithdrawalMoney
@@ -53,7 +55,7 @@ func (daemon *Daemon) CreateWithdrawalRecord(info *models.WithdrawalRecord) erro
 			logrus.Errorf("create withdrawal record error: %v", err)
 			return err
 		}
-		
+
 		h := models.FxAccountHistory{
 			UnionId:    info.UnionId,
 			Score:      -info.WithdrawalMoney,
@@ -62,9 +64,19 @@ func (daemon *Daemon) CreateWithdrawalRecord(info *models.WithdrawalRecord) erro
 			CreatedAt:  time.Now().Unix(),
 		}
 		models.CreateFxAccountHistoryList([]models.FxAccountHistory{h})
-		
+
 		// 直接提现
-		
+		wReq := &ext.WithdrawalReq{
+			OpenId:      info.OpenId,
+			TotalAmount: int64(info.WithdrawalMoney / float32(daemon.cfg.Score.EnlargeScale) * 100),
+			MchBillno:   strconv.Itoa(int(info.ID)),
+		}
+		err = daemon.we.Withdrawal(wReq)
+		if err != nil {
+			logrus.Errorf("info[%v] wechat withdrawal error: %v", info, err)
+		} else {
+			logrus.Infof("user[%s] withdrawl[%f] wechat success.", info.UnionId)
+		}
 	} else {
 		info.AccountId = fxAccount.ID
 		info.Status = WITHDRAWAL_WAITING
@@ -74,7 +86,7 @@ func (daemon *Daemon) CreateWithdrawalRecord(info *models.WithdrawalRecord) erro
 			return err
 		}
 	}
-	
+
 	return nil
 }
 

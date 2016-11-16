@@ -3,7 +3,7 @@ package models
 import (
 	"fmt"
 	"time"
-	
+
 	"github.com/Sirupsen/logrus"
 )
 
@@ -20,7 +20,7 @@ func CreateFxAccountLimt(info *FxAccountLimit) error {
 	if info.UnionId == "" {
 		return fmt.Errorf("fx account limit union_id[%s] cannot be nil.", info.UnionId)
 	}
-	
+
 	now := time.Now().Unix()
 	info.CreatedAt = now
 	info.UpdatedAt = now
@@ -30,6 +30,6 @@ func CreateFxAccountLimt(info *FxAccountLimit) error {
 		return err
 	}
 	logrus.Infof("fx account limit union_id[%s] create success.", info.UnionId)
-	
+
 	return nil
 }

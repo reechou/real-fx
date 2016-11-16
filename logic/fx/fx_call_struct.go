@@ -111,6 +111,7 @@ type getFxOrderWaitSettlementSumReq struct {
 type withdrawalMoneyReq struct {
 	UnionId string  `json:"unionId"`
 	Money   float32 `json:"money"`
+	OpenId  string  `json:"openId"`
 }
 
 type getWithdrawalListReq struct {
