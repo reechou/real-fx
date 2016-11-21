@@ -187,7 +187,7 @@ func GetFxOrderSettlementRecordList(unionId string, offset, num int64) ([]FxOrde
 
 func GetFxOrderSettlementRecordListByid(accountId int64, offset, num int64) ([]FxOrderSettlementRecord, error) {
 	var fxOrderSMRecordList []FxOrderSettlementRecord
-	err := x.Where("accountId = ?", accountId).Limit(int(num), int(offset)).Find(&fxOrderSMRecordList)
+	err := x.Where("account_id = ?", accountId).Limit(int(num), int(offset)).Find(&fxOrderSMRecordList)
 	if err != nil {
 		logrus.Errorf("accunt_id[%d] get fx order settlement record list error: %v", accountId, err)
 		return nil, err
