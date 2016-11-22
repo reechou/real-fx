@@ -27,7 +27,7 @@ func (daemon *Daemon) CreateFxAccount(fxAccount *models.FxAccount, fxAccountFoll
 			return err
 		}
 		h := models.FxAccountHistory{
-			UnionId:    fxAccount.UnionId,
+			UnionId:    fxAccount.Superior,
 			Score:      float32(daemon.cfg.Score.FollowScore),
 			ChangeType: int64(FX_HISTORY_TYPE_INVITE),
 			ChangeDesc: FxHistoryDescs[FX_HISTORY_TYPE_INVITE],
