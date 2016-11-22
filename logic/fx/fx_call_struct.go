@@ -121,6 +121,10 @@ type getWithdrawalListReq struct {
 	Status  int64  `json:"status"`
 }
 
+type getWithdrawalSumReq struct {
+	UnionId string `json:"unionId"`
+}
+
 type FxResponse struct {
 	Code int64       `json:"code"`
 	Msg  string      `json:"msg,omitempty"`

@@ -75,3 +75,27 @@ func (fxr *FXRouter) getFxWithdrawalRecordList(ctx context.Context, w http.Respo
 
 	return utils.WriteJSON(w, http.StatusOK, rsp)
 }
+
+func (fxr *FXRouter) getFxWithdrawalRecordSum(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+	if err := utils.ParseForm(r); err != nil {
+		return err
+	}
+	
+	req := &getWithdrawalSumReq{}
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		return err
+	}
+	
+	rsp := &FxResponse{Code: RspCodeOK}
+	
+	total, err := fxr.backend.GetWithdrawalRecordSum(req.UnionId)
+	if err != nil {
+		logrus.Errorf("Error get fx withdrawal record sum: %v", err)
+		rsp.Code = RspCodeErr
+		rsp.Msg = fmt.Sprintf("Error get fx withdrawal record sum: %v", err)
+	} else {
+		rsp.Data = total
+	}
+	
+	return utils.WriteJSON(w, http.StatusOK, rsp)
+}

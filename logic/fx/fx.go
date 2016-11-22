@@ -49,5 +49,6 @@ func (fxr *FXRouter) initRoutes() {
 		// about withdrawal
 		router.NewPostRoute("/fx/create_fx_withdrawal", fxr.createFxWithdrawalRecord),
 		router.NewPostRoute("/fx/get_fx_withdrawal_record", fxr.getFxWithdrawalRecordList),
+		router.NewPostRoute("/fx/get_fx_withdrawal_sum", fxr.getFxWithdrawalRecordSum),
 	}
 }

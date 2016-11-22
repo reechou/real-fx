@@ -97,3 +97,12 @@ func GetWithdrawalRecordListById(accountId int64, offset, num int64) ([]Withdraw
 	}
 	return list, nil
 }
+
+func GetWithdrawalRecordSum(unionId string) (float32, error) {
+	total, err := x.Where("union_id = ?", unionId).Sum(&WithdrawalRecord{}, "withdrawal_money")
+	if err != nil {
+		logrus.Errorf("unionId[%s] get withdrawal sum error: %v", unionId, err)
+		return 0.0, err
+	}
+	return float32(total), nil
+}

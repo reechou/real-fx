@@ -115,3 +115,7 @@ func (daemon *Daemon) GetWithdrawalRecordListById(accountId int64, offset, num i
 	}
 	return list, nil
 }
+
+func (daemon *Daemon) GetWithdrawalRecordSum(unionId string) (float32, error) {
+	return models.GetWithdrawalRecordSum(unionId)
+}
