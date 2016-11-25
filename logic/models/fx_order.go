@@ -18,7 +18,7 @@ type FxOrder struct {
 	Price       float32 `xorm:"not null default 0.000 decimal(10,3)"`
 	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)" json:"-"`
 	Status      int64   `xorm:"not null default 0 int index"`
-	CreatedAt   int64   `xorm:"not null default 0 int"`
+	CreatedAt   int64   `xorm:"not null default 0 int index"`
 	UpdatedAt   int64   `xorm:"not null default 0 int"`
 }
 
@@ -29,7 +29,7 @@ type FxOrderWaitSettlementRecord struct {
 	OrderId     string  `xorm:"not null default '' varchar(128)"`
 	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)"`
 	Level       int64   `xorm:"not null default 0 int"`
-	CreatedAt   int64   `xorm:"not null default 0 int"`
+	CreatedAt   int64   `xorm:"not null default 0 int index"`
 }
 
 type FxOrderSettlementRecord struct {
@@ -40,7 +40,7 @@ type FxOrderSettlementRecord struct {
 	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)"`
 	SourceId    string  `xorm:"not null default '' varchar(128)"`
 	Level       int64   `xorm:"not null default 0 int"`
-	CreatedAt   int64   `xorm:"not null default 0 int"`
+	CreatedAt   int64   `xorm:"not null default 0 int index"`
 	UpdatedAt   int64   `xorm:"not null default 0 int"`
 }
 
@@ -101,7 +101,7 @@ func GetFxOrderListCountById(accountId int64) (int64, error) {
 
 func GetFxOrderList(unionId string, offset, num, status int64) ([]FxOrder, error) {
 	var fxOrderList []FxOrder
-	err := x.Where("union_id = ?", unionId).And("status = ?", status).Limit(int(num), int(offset)).Find(&fxOrderList)
+	err := x.Where("union_id = ?", unionId).And("status = ?", status).Desc("created_at").Limit(int(num), int(offset)).Find(&fxOrderList)
 	if err != nil {
 		logrus.Errorf("union_id[%s] get fx order list error: %v", unionId, err)
 		return nil, err
@@ -111,7 +111,7 @@ func GetFxOrderList(unionId string, offset, num, status int64) ([]FxOrder, error
 
 func GetFxOrderListById(accountId int64, offset, num, status int64) ([]FxOrder, error) {
 	var fxOrderList []FxOrder
-	err := x.Where("account_id = ?", accountId).And("status = ?", status).Limit(int(num), int(offset)).Find(&fxOrderList)
+	err := x.Where("account_id = ?", accountId).And("status = ?", status).Desc("created_at").Limit(int(num), int(offset)).Find(&fxOrderList)
 	if err != nil {
 		logrus.Errorf("account_id[%d] get fx order list error: %v", accountId, err)
 		return nil, err
@@ -177,7 +177,7 @@ func GetFxOrderSettlementRecordListCountById(accountId int64) (int64, error) {
 
 func GetFxOrderSettlementRecordList(unionId string, offset, num int64) ([]FxOrderSettlementRecord, error) {
 	var fxOrderSMRecordList []FxOrderSettlementRecord
-	err := x.Where("union_id = ?", unionId).Limit(int(num), int(offset)).Find(&fxOrderSMRecordList)
+	err := x.Where("union_id = ?", unionId).Desc("created_at").Limit(int(num), int(offset)).Find(&fxOrderSMRecordList)
 	if err != nil {
 		logrus.Errorf("union_id[%s] get fx order settlement record list error: %v", unionId, err)
 		return nil, err
@@ -187,7 +187,7 @@ func GetFxOrderSettlementRecordList(unionId string, offset, num int64) ([]FxOrde
 
 func GetFxOrderSettlementRecordListByid(accountId int64, offset, num int64) ([]FxOrderSettlementRecord, error) {
 	var fxOrderSMRecordList []FxOrderSettlementRecord
-	err := x.Where("account_id = ?", accountId).Limit(int(num), int(offset)).Find(&fxOrderSMRecordList)
+	err := x.Where("account_id = ?", accountId).Desc("created_at").Limit(int(num), int(offset)).Find(&fxOrderSMRecordList)
 	if err != nil {
 		logrus.Errorf("accunt_id[%d] get fx order settlement record list error: %v", accountId, err)
 		return nil, err
@@ -258,7 +258,7 @@ func GetFxOrderWaitSettlementRecordListCountById(accountId int64) (int64, error)
 
 func GetFxOrderWaitSettlementRecordList(unionId string, offset, num int64) ([]FxOrderWaitSettlementRecord, error) {
 	var fxOrderWSMRecordList []FxOrderWaitSettlementRecord
-	err := x.Where("union_id = ?", unionId).Limit(int(num), int(offset)).Find(&fxOrderWSMRecordList)
+	err := x.Where("union_id = ?", unionId).Desc("created_at").Limit(int(num), int(offset)).Find(&fxOrderWSMRecordList)
 	if err != nil {
 		logrus.Errorf("union_id[%s] get fx order wait settlement record list error: %v", unionId, err)
 		return nil, err
@@ -268,7 +268,7 @@ func GetFxOrderWaitSettlementRecordList(unionId string, offset, num int64) ([]Fx
 
 func GetFxOrderWaitSettlementRecordListById(accountId int64, offset, num int64) ([]FxOrderWaitSettlementRecord, error) {
 	var fxOrderWSMRecordList []FxOrderWaitSettlementRecord
-	err := x.Where("account_id = ?", accountId).Limit(int(num), int(offset)).Find(&fxOrderWSMRecordList)
+	err := x.Where("account_id = ?", accountId).Desc("created_at").Limit(int(num), int(offset)).Find(&fxOrderWSMRecordList)
 	if err != nil {
 		logrus.Errorf("account_id[%d] get fx order wait settlement record list error: %v", accountId, err)
 		return nil, err
