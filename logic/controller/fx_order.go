@@ -69,14 +69,15 @@ func (daemon *Daemon) CreateFxOrder(info *models.FxOrder) error {
 			break
 		}
 
-		recordList = append(recordList, models.FxOrderWaitSettlementRecord{
-			AccountId:   fxAccount.ID,
-			UnionId:     unionId,
-			OrderId:     info.OrderId,
-			ReturnMoney: levelReturns[i],
-			Level:       int64(i),
-			CreatedAt:   now,
-		})
+		//recordList = append(recordList, models.FxOrderWaitSettlementRecord{
+		//	AccountId:   fxAccount.ID,
+		//	UnionId:     unionId,
+		//	OrderId:     info.OrderId,
+		//	ReturnMoney: levelReturns[i],
+		//	Level:       int64(i),
+		//	CreatedAt:   now,
+		//})
+		
 		unionId = fxAccount.Superior
 	}
 

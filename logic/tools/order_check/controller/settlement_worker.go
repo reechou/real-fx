@@ -3,6 +3,7 @@ package controller
 import (
 	"sync"
 	"time"
+	"fmt"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/reechou/real-fx/logic/tools/order_check/config"
@@ -105,10 +106,10 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 	//	return err
 	//}
 
-	fxAccount := &fx_models.FxAccount{
+	orderFxAccount := &fx_models.FxAccount{
 		UnionId: order.UnionId,
 	}
-	has, err := fx_models.GetFxAccount(fxAccount)
+	has, err := fx_models.GetFxAccount(orderFxAccount)
 	if err != nil {
 		logrus.Errorf("do settlement order[%v] in level[0] get fx account from union_id[%d] error: %v",
 			order, order.UnionId, err)
@@ -121,7 +122,7 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 
 	var recordList []fx_models.FxOrderSettlementRecord
 	recordList = append(recordList, fx_models.FxOrderSettlementRecord{
-		AccountId:   fxAccount.ID,
+		AccountId:   orderFxAccount.ID,
 		UnionId:     order.UnionId,
 		OrderId:     order.OrderId,
 		ReturnMoney: levelReturns[0],
@@ -133,15 +134,15 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 
 	var historyList []fx_models.FxAccountHistory
 	historyList = append(historyList, fx_models.FxAccountHistory{
-		AccountId:  fxAccount.ID,
-		UnionId:    fxAccount.UnionId,
+		AccountId:  orderFxAccount.ID,
+		UnionId:    orderFxAccount.UnionId,
 		Score:      levelReturns[0],
 		ChangeType: int64(FX_HISTORY_TYPE_ORDER_0),
 		ChangeDesc: FxHistoryDescs[FX_HISTORY_TYPE_ORDER_0],
 		CreatedAt:  now,
 	})
 
-	unionId := fxAccount.Superior
+	unionId := orderFxAccount.Superior
 	for i := 1; i < len(levelReturns); i++ {
 		// get upper
 		fxAccount := &fx_models.FxAccount{
@@ -172,23 +173,23 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 		//	return err
 		//}
 		
-		recordList = append(recordList, fx_models.FxOrderSettlementRecord{
-			AccountId:   fxAccount.ID,
-			UnionId:     unionId,
-			OrderId:     order.OrderId,
-			ReturnMoney: levelReturns[i],
-			SourceId:    order.UnionId,
-			Level:       int64(i),
-			CreatedAt:   now,
-			UpdatedAt:   now,
-		})
+		//recordList = append(recordList, fx_models.FxOrderSettlementRecord{
+		//	AccountId:   fxAccount.ID,
+		//	UnionId:     unionId,
+		//	OrderId:     order.OrderId,
+		//	ReturnMoney: levelReturns[i],
+		//	SourceId:    order.UnionId,
+		//	Level:       int64(i),
+		//	CreatedAt:   now,
+		//	UpdatedAt:   now,
+		//})
 		
 		historyList = append(historyList, fx_models.FxAccountHistory{
 			AccountId:  fxAccount.ID,
 			UnionId:    fxAccount.UnionId,
 			Score:      levelReturns[i],
 			ChangeType: int64(FX_HISTORY_TYPE_ORDER_0 + i),
-			ChangeDesc: FxHistoryDescs[FX_HISTORY_TYPE_ORDER_0+i],
+			ChangeDesc: fmt.Sprintf(FxHistoryDescs[FX_HISTORY_TYPE_ORDER_0+i], orderFxAccount.Name),
 			CreatedAt:  now,
 		})
 		unionId = fxAccount.Superior

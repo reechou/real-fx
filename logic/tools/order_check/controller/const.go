@@ -35,8 +35,10 @@ const (
 	FX_HISTORY_TYPE_ORDER_0
 	FX_HISTORY_TYPE_ORDER_1
 	FX_HISTORY_TYPE_ORDER_2
+	FX_HISTORY_TYPE_WITHDRAWAL
+	FX_HISTORY_TYPE_SCORE_MALL
 )
 
 var (
-	FxHistoryDescs = []string{"每日签到", "邀请下线", "订单返积分", "一级分销积分", "二级分销积分"}
+	FxHistoryDescs = []string{"每日签到", "邀请下线", "订单返积分", "一级下线 %s", "二级下线 %s"}
 )
