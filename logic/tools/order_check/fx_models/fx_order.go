@@ -15,10 +15,20 @@ type FxOrder struct {
 	OrderId     string  `xorm:"not null default '' varchar(128) unique"`
 	OrderName   string  `xorm:"not null default '' varchar(128)"`
 	Price       float32 `xorm:"not null default 0.000 decimal(10,3)"`
-	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)"`
+	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)" json:"-"`
 	Status      int64   `xorm:"not null default 0 int index"`
-	CreatedAt   int64   `xorm:"not null default 0 int"`
+	CreatedAt   int64   `xorm:"not null default 0 int index"`
 	UpdatedAt   int64   `xorm:"not null default 0 int"`
+}
+
+type FxOrderWaitSettlementRecord struct {
+	ID          int64   `xorm:"pk autoincr"`
+	AccountId   int64   `xorm:"not null default 0 int index"`
+	UnionId     string  `xorm:"not null default '' varchar(128) index"`
+	OrderId     string  `xorm:"not null default '' varchar(128) index"`
+	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)"`
+	Level       int64   `xorm:"not null default 0 int index"`
+	CreatedAt   int64   `xorm:"not null default 0 int index"`
 }
 
 type FxOrderSettlementRecord struct {
@@ -28,8 +38,8 @@ type FxOrderSettlementRecord struct {
 	OrderId     string  `xorm:"not null default 0 int index"`
 	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)"`
 	SourceId    string  `xorm:"not null default '' varchar(128)"`
-	Level       int64   `xorm:"not null default 0 int"`
-	CreatedAt   int64   `xorm:"not null default 0 int"`
+	Level       int64   `xorm:"not null default 0 int index"`
+	CreatedAt   int64   `xorm:"not null default 0 int index"`
 	UpdatedAt   int64   `xorm:"not null default 0 int"`
 }
 

@@ -69,14 +69,14 @@ func (daemon *Daemon) CreateFxOrder(info *models.FxOrder) error {
 			break
 		}
 
-		//recordList = append(recordList, models.FxOrderWaitSettlementRecord{
-		//	AccountId:   fxAccount.ID,
-		//	UnionId:     unionId,
-		//	OrderId:     info.OrderId,
-		//	ReturnMoney: levelReturns[i],
-		//	Level:       int64(i),
-		//	CreatedAt:   now,
-		//})
+		recordList = append(recordList, models.FxOrderWaitSettlementRecord{
+			AccountId:   fxAccount.ID,
+			UnionId:     unionId,
+			OrderId:     info.OrderId,
+			ReturnMoney: levelReturns[i],
+			Level:       int64(i),
+			CreatedAt:   now,
+		})
 		
 		unionId = fxAccount.Superior
 	}
@@ -156,11 +156,11 @@ func (daemon *Daemon) GetFxOrderWaitSettlementRecordSum(accountId int64) (float3
 }
 
 func (daemon *Daemon) GetFxOrderWaitSettlementRecordListCountById(accountId int64) (int64, error) {
-	return models.GetFxOrderWaitSettlementRecordListCountById(accountId)
+	return models.GetFxOrderWaitSettlementRecordListCountById(accountId, FX_ORDER_WAIT)
 }
 
 func (daemon *Daemon) GetFxOrderWaitSettlementRecordListById(accountId int64, offset, num int64) ([]models.FxOrderWaitSettlementRecord, error) {
-	list, err := models.GetFxOrderWaitSettlementRecordListById(accountId, offset, num)
+	list, err := models.GetFxOrderWaitSettlementRecordListById(accountId, offset, num, FX_ORDER_WAIT)
 	if err != nil {
 		logrus.Errorf("get fx wait settlement order record list error: %v", err)
 		return nil, err
