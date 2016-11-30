@@ -11,7 +11,7 @@ type FxAccountHistory struct {
 	Score      float32 `xorm:"not null default 0.000 decimal(9,3)"`
 	ChangeType int64   `xorm:"not null default 0 int index"`
 	ChangeDesc string  `xorm:"not null default '' varchar(64)"`
-	CreatedAt  int64   `xorm:"not null default 0 int"`
+	CreatedAt  int64   `xorm:"not null default 0 int index"`
 }
 
 func CreateFxAccountHistoryList(list []FxAccountHistory) error {
@@ -37,7 +37,7 @@ func GetFxAccountHistoryListCount(unionId string) (int64, error) {
 
 func GetFxAccountHistoryList(unionId string, offset, num int64) ([]FxAccountHistory, error) {
 	var fxAccountHistoryList []FxAccountHistory
-	err := x.Where("union_id = ?", unionId).Limit(int(num), int(offset)).Find(&fxAccountHistoryList)
+	err := x.Where("union_id = ?", unionId).Desc("created_at").Limit(int(num), int(offset)).Find(&fxAccountHistoryList)
 	if err != nil {
 		logrus.Errorf("union_id[%s] get fx account wait history list error: %v", unionId, err)
 		return nil, err
@@ -56,7 +56,7 @@ func GetFxAccountHistoryListByTypeCount(unionId string, cType int64) (int64, err
 
 func GetFxAccountHistoryListByType(unionId string, cType, offset, num int64) ([]FxAccountHistory, error) {
 	var fxAccountHistoryList []FxAccountHistory
-	err := x.Where("union_id = ?", unionId).And("change_type = ?", cType).Limit(int(num), int(offset)).Find(&fxAccountHistoryList)
+	err := x.Where("union_id = ?", unionId).And("change_type = ?", cType).Desc("created_at").Limit(int(num), int(offset)).Find(&fxAccountHistoryList)
 	if err != nil {
 		logrus.Errorf("union_id[%s] get fx account wait history list by type[%d] error: %v", unionId, cType, err)
 		return nil, err

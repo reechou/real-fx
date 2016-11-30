@@ -83,7 +83,7 @@ func (ocw *OrderCheck) handleOrder(idx int, bean interface{}) error {
 		return fmt.Errorf("get taobao order no this order[%s]", order.OrderId)
 	}
 
-	if taobaoOrder.GoodsState == TAOBAO_ORDER_SETTLEMENT {
+	if taobaoOrder.GoodsState == TAOBAO_ORDER_SETTLEMENT || taobaoOrder.GoodsState == TAOBAO_ORDER_SUCCESS {
 		// do settlement
 		ocw.sw.SettlementOrder(order)
 	} else if taobaoOrder.GoodsState == TAOBAO_ORDER_INVALID {

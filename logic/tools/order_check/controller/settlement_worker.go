@@ -119,17 +119,17 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 		return
 	}
 
-	//var recordList []fx_models.FxOrderSettlementRecord
-	//recordList = append(recordList, fx_models.FxOrderSettlementRecord{
-	//	AccountId:   fxAccount.ID,
-	//	UnionId:     order.UnionId,
-	//	OrderId:     order.OrderId,
-	//	ReturnMoney: levelReturns[0],
-	//	SourceId:    order.UnionId,
-	//	Level:       0,
-	//	CreatedAt:   now,
-	//	UpdatedAt:   now,
-	//})
+	var recordList []fx_models.FxOrderSettlementRecord
+	recordList = append(recordList, fx_models.FxOrderSettlementRecord{
+		AccountId:   fxAccount.ID,
+		UnionId:     order.UnionId,
+		OrderId:     order.OrderId,
+		ReturnMoney: levelReturns[0],
+		SourceId:    order.UnionId,
+		Level:       0,
+		CreatedAt:   now,
+		UpdatedAt:   now,
+	})
 
 	var historyList []fx_models.FxAccountHistory
 	historyList = append(historyList, fx_models.FxAccountHistory{
@@ -171,17 +171,18 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 		//	logrus.Errorf("do settlement order[%v] update fx account month union_id[%s][level-%d] order error: %v", order, unionId, i, err)
 		//	return err
 		//}
-
-		//recordList = append(recordList, fx_models.FxOrderSettlementRecord{
-		//	AccountId:   fxAccount.ID,
-		//	UnionId:     unionId,
-		//	OrderId:     order.OrderId,
-		//	ReturnMoney: levelReturns[i],
-		//	SourceId:    order.UnionId,
-		//	Level:       int64(i),
-		//	CreatedAt:   now,
-		//	UpdatedAt:   now,
-		//})
+		
+		recordList = append(recordList, fx_models.FxOrderSettlementRecord{
+			AccountId:   fxAccount.ID,
+			UnionId:     unionId,
+			OrderId:     order.OrderId,
+			ReturnMoney: levelReturns[i],
+			SourceId:    order.UnionId,
+			Level:       int64(i),
+			CreatedAt:   now,
+			UpdatedAt:   now,
+		})
+		
 		historyList = append(historyList, fx_models.FxAccountHistory{
 			AccountId:  fxAccount.ID,
 			UnionId:    fxAccount.UnionId,
@@ -192,13 +193,16 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 		})
 		unionId = fxAccount.Superior
 	}
-
+	
+	err = fx_models.CreateFxOrderSettlementRecordList(recordList)
+	if err != nil {
+		logrus.Errorf("create fx order[%v] settlement record list error: %v", order, err)
+	}
 	// insert history
-	//err = fx_models.CreateFxOrderSettlementRecordList(recordList)
-	//if err != nil {
-	//	logrus.Errorf("create fx order[%d] settlement record list error: %v", order, err)
-	//}
-	fx_models.CreateFxAccountHistoryList(historyList)
+	err = fx_models.CreateFxAccountHistoryList(historyList)
+	if err != nil {
+		logrus.Errorf("create fx order[%v] fx account history list error: %v", order, err)
+	}
 }
 
 func (sw *SettlementWorker) updateFxAccountMonth(month, unionId string, returnMoney float32) error {

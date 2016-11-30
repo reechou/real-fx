@@ -17,7 +17,7 @@ func (daemon *Daemon) CreateFxAccount(fxAccount *models.FxAccount, fxAccountFoll
 		logrus.Errorf("create fx account error: %v", err)
 		return err
 	}
-	if fxAccount.Superior != "" {
+	if fxAccount.Superior != "" && fxAccount.Superior != GodSalesman {
 		superFxAccount := &models.FxAccount{
 			UnionId: fxAccount.Superior,
 		}
