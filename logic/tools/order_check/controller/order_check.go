@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -80,8 +79,10 @@ func (ocw *OrderCheck) handleOrder(idx int, bean interface{}) error {
 	}
 	if !has {
 		logrus.Errorf("get taobao order no this order[%s]", order.OrderId)
-		return fmt.Errorf("get taobao order no this order[%s]", order.OrderId)
+		return nil
 	}
+	
+	logrus.Debugf("get taobao order[%v]", taobaoOrder)
 
 	if taobaoOrder.GoodsState == TAOBAO_ORDER_SETTLEMENT || taobaoOrder.GoodsState == TAOBAO_ORDER_SUCCESS {
 		// do settlement

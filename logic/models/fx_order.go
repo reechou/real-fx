@@ -36,7 +36,7 @@ type FxOrderSettlementRecord struct {
 	ID          int64   `xorm:"pk autoincr"`
 	AccountId   int64   `xorm:"not null default 0 int index"`
 	UnionId     string  `xorm:"not null default '' varchar(128) index"`
-	OrderId     string  `xorm:"not null default 0 int index"`
+	OrderId     string  `xorm:"not null default '' varchar(128)"`
 	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)"`
 	SourceId    string  `xorm:"not null default '' varchar(128)"`
 	Level       int64   `xorm:"not null default 0 int index"`
