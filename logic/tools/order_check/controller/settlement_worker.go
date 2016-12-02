@@ -7,6 +7,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/reechou/real-fx/logic/tools/order_check/config"
+	"github.com/reechou/real-fx/logic/tools/order_check/act"
 	"github.com/reechou/real-fx/logic/tools/order_check/fx_models"
 )
 
@@ -14,6 +15,7 @@ type SettlementWorker struct {
 	orderChanList []chan *fx_models.FxOrder
 
 	cfg *config.Config
+	act *act.ActLogic
 
 	wg   sync.WaitGroup
 	stop chan struct{}
@@ -23,6 +25,7 @@ func NewSettlementWorker(maxWorker, maxChanLen int, cfg *config.Config) *Settlem
 	sw := &SettlementWorker{
 		cfg:  cfg,
 		stop: make(chan struct{}),
+		act:  act.NewActLogic(cfg),
 	}
 	for i := 0; i < maxWorker; i++ {
 		orderChan := make(chan *fx_models.FxOrder, maxChanLen)
@@ -204,6 +207,8 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 	if err != nil {
 		logrus.Errorf("create fx order[%v] fx account history list error: %v", order, err)
 	}
+	// check order act
+	sw.act.CheckActOfOrder(orderFxAccount)
 }
 
 func (sw *SettlementWorker) updateFxAccountMonth(month, unionId string, returnMoney float32) error {

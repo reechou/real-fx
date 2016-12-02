@@ -39,6 +39,10 @@ type WorkerInfo struct {
 	SWMaxChanLen       int
 }
 
+type Act struct {
+	ActList []string
+}
+
 type Config struct {
 	Debug   bool
 	Path    string
@@ -50,6 +54,7 @@ type Config struct {
 	SettlementCommission
 	WorkerInfo
 	Score
+	Act
 }
 
 func NewConfig() *Config {
@@ -80,6 +85,8 @@ func NewConfig() *Config {
 		}
 		c.SettlementCommission.LevelPer = append(c.SettlementCommission.LevelPer, vi)
 	}
+	
+	fmt.Println(c)
 
 	return c
 }

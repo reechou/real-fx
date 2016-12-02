@@ -73,7 +73,7 @@ func (daemon *Daemon) CreateWithdrawalRecord(info *models.WithdrawalRecord) erro
 		}
 		err = daemon.we.Withdrawal(wReq)
 		if err != nil {
-			logrus.Errorf("info[%v] wechat withdrawal error: %v", info, err)
+			logrus.Errorf("account[%v] info[%v] wechat withdrawal error: %v", fxAccount, info, err)
 		} else {
 			logrus.Infof("user[%s] withdrawl[%f] wechat success.", info.UnionId)
 		}

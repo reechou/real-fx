@@ -83,3 +83,12 @@ func CreateFxOrderSettlementRecordList(list []FxOrderSettlementRecord) error {
 	}
 	return nil
 }
+
+func GetFxOrderSettlementRecordListCountById(accountId int64) (int64, error) {
+	count, err := x.Where("account_id = ?", accountId).Count(&FxOrderSettlementRecord{})
+	if err != nil {
+		logrus.Errorf("account_id[%d] get fx order settlement record list count error: %v", accountId, err)
+		return 0, err
+	}
+	return count, nil
+}
