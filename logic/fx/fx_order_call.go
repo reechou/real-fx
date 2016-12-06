@@ -22,9 +22,9 @@ func (fxr *FXRouter) createFxOrder(ctx context.Context, w http.ResponseWriter, r
 	}
 
 	rsp := &FxResponse{Code: RspCodeOK}
-	rsp.Msg = "暂时无法提交"
-	rsp.Code = RspCodeErr
-	return utils.WriteJSON(w, http.StatusOK, rsp)
+	//rsp.Msg = "暂时无法提交"
+	//rsp.Code = RspCodeErr
+	//return utils.WriteJSON(w, http.StatusOK, rsp)
 
 	fxAccount := &models.FxAccount{
 		UnionId: req.UnionId,
