@@ -224,7 +224,7 @@ func GetFxOrderWaitSettlementRecordListSumById(accountId int64, status int64) (f
 	//sum, err := x.Table("fx_order_wait_settlement_record").Select("fx_order_wait_settlement_record.return_money").
 	//	Join("LEFT", "fx_order", "fx_order_wait_settlement_record.order_id = fx_order.order_id").Where("fx_order.status = ?", status).
 	//	And("fx_order_wait_settlement_record.union_id = ?", unionId).Sum()
-	results, err := x.Query("select sum(r.return_money) as sum_money from fx_order_wait_settlement_record as r left join fx_order as o on r.order_id = o.order_id where o.status = ? and r.account_id = ?", status, accountId)
+	results, err := x.Query("select sum(r.return_money) as sum_money from fx_order_wait_settlement_record as r left join fx_order as o on r.order_id = o.order_id and r.goods_id = o.goods_id where o.status = ? and r.account_id = ?", status, accountId)
 	if err != nil {
 		logrus.Errorf("account_id[%d] get fx order wait settlement record list sum(return_money) error: %v", accountId, err)
 		return 0, err

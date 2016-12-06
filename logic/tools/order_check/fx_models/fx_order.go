@@ -12,8 +12,8 @@ type FxOrder struct {
 	ID          int64   `xorm:"pk autoincr"`
 	AccountId   int64   `xorm:"not null default 0 int index"`
 	UnionId     string  `xorm:"not null default '' varchar(128) index"`
-	OrderId     string  `xorm:"not null default '' varchar(128) unique 'UNI_fx_order'"`
-	GoodsId     string  `xorm:"not null default '' varchar(128) unique 'UNI_fx_order'"`
+	OrderId     string  `xorm:"varchar(128) not null default '' unique(uni_fx_order_id)"`
+	GoodsId     string  `xorm:"varchar(128) not null default '' unique(uni_fx_order_id)"`
 	OrderName   string  `xorm:"not null default '' varchar(128)"`
 	Price       float32 `xorm:"not null default 0.000 decimal(10,3)"`
 	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)" json:"-"`
@@ -27,6 +27,7 @@ type FxOrderWaitSettlementRecord struct {
 	AccountId   int64   `xorm:"not null default 0 int index"`
 	UnionId     string  `xorm:"not null default '' varchar(128) index"`
 	OrderId     string  `xorm:"not null default '' varchar(128) index"`
+	GoodsId     string  `xorm:"not null default '' varchar(128)"`
 	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)"`
 	Level       int64   `xorm:"not null default 0 int index"`
 	CreatedAt   int64   `xorm:"not null default 0 int index"`
@@ -37,6 +38,7 @@ type FxOrderSettlementRecord struct {
 	AccountId   int64   `xorm:"not null default 0 int index"`
 	UnionId     string  `xorm:"not null default '' varchar(128) index"`
 	OrderId     string  `xorm:"not null default '' varchar(128)"`
+	GoodsId     string  `xorm:"not null default '' varchar(128)"`
 	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)"`
 	SourceId    string  `xorm:"not null default '' varchar(128)"`
 	Level       int64   `xorm:"not null default 0 int index"`
