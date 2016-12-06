@@ -22,7 +22,7 @@ type FxAccount struct {
 	Superior       string  `xorm:"not null default '' varchar(128) index"`
 	SignTime       int64   `xorm:"not null default 0 int index"`
 	Status         int64   `xorm:"not null default 0 int"`
-	CreatedAt      int64   `xorm:"not null default 0 int"`
+	CreatedAt      int64   `xorm:"not null default 0 int index"`
 	UpdatedAt      int64   `xorm:"not null default 0 int"`
 }
 
@@ -157,7 +157,7 @@ func GetFxAccountById(info *FxAccount) (bool, error) {
 }
 
 func GetLowerPeopleCount(unionId string) (int64, error) {
-	count, err := x.Where("superior = ?", unionId).Count(&FxAccount{})
+	count, err := x.Where("superior = ?", unionId).Desc("created_at").Count(&FxAccount{})
 	if err != nil {
 		logrus.Errorf("union_id[%s] get lower peoples list count error: %v", unionId, err)
 		return 0, err
