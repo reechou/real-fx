@@ -71,6 +71,7 @@ func (ocw *OrderCheck) handleOrder(idx int, bean interface{}) error {
 	// check order status
 	taobaoOrder := &models.TaobaoOrderReal{
 		OrderId: order.OrderId,
+		GoodsId: order.GoodsId,
 	}
 	has, err := models.GetTaobaoOrder(taobaoOrder)
 	if err != nil {
