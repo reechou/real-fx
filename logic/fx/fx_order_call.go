@@ -36,6 +36,7 @@ func (fxr *FXRouter) createFxOrder(ctx context.Context, w http.ResponseWriter, r
 			AccountId:   fxAccount.ID,
 			UnionId:     req.UnionId,
 			OrderId:     req.OrderId,
+			GoodsId:     req.GoodsId,
 			OrderName:   req.OrderName,
 			Price:       req.Price,
 			ReturnMoney: req.ReturnMoney,

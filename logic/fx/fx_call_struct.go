@@ -79,6 +79,7 @@ type getFxTeamMembersReq struct {
 type createFxOrderReq struct {
 	UnionId     string  `json:"unionId"`
 	OrderId     string  `json:"orderId"`
+	GoodsId     string  `json:"goodsId"`
 	OrderName   string  `json:"orderName"`
 	Price       float32 `json:"price"`
 	ReturnMoney float32 `json:"returnMoney"`
