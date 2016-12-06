@@ -28,6 +28,7 @@ type FxOrderWaitSettlementRecord struct {
 	UnionId     string  `xorm:"not null default '' varchar(128) index"`
 	OrderId     string  `xorm:"not null default '' varchar(128) index"`
 	GoodsId     string  `xorm:"not null default '' varchar(128)"`
+	Price       float32 `xorm:"not null default 0.000 decimal(10,3)"`
 	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)"`
 	Level       int64   `xorm:"not null default 0 int index"`
 	CreatedAt   int64   `xorm:"not null default 0 int index"`
@@ -39,6 +40,7 @@ type FxOrderSettlementRecord struct {
 	UnionId     string  `xorm:"not null default '' varchar(128) index"`
 	OrderId     string  `xorm:"not null default '' varchar(128)"`
 	GoodsId     string  `xorm:"not null default '' varchar(128)"`
+	Price       float32 `xorm:"not null default 0.000 decimal(10,3)"`
 	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)"`
 	SourceId    string  `xorm:"not null default '' varchar(128)"`
 	Level       int64   `xorm:"not null default 0 int index"`
