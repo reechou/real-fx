@@ -98,7 +98,7 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 		logrus.Errorf("do settlement order[%v] settlement owner order error: %v", order, err)
 		return
 	}
-	logrus.Infof("order_id[%s] settlement for owner[%s] with return_money[%f] success", order.OrderId, order.UnionId, levelReturns[0])
+	logrus.Infof("order_id[%s][%s][%f] settlement for owner[%s] with return_money[%f] success", order.OrderId, order.GoodsId, order.Price, order.UnionId, levelReturns[0])
 
 	now := time.Now().Unix()
 
@@ -128,6 +128,8 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 		AccountId:   orderFxAccount.ID,
 		UnionId:     order.UnionId,
 		OrderId:     order.OrderId,
+		GoodsId:     order.GoodsId,
+		Price:       order.Price,
 		ReturnMoney: levelReturns[0],
 		SourceId:    order.UnionId,
 		Level:       0,

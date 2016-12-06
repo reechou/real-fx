@@ -70,19 +70,20 @@ func (ocw *OrderCheck) handleOrder(idx int, bean interface{}) error {
 	logrus.Debugf("order[%v] checking.", order)
 	// check order status
 	taobaoOrder := &models.TaobaoOrderReal{
-		OrderId: order.OrderId,
-		GoodsId: order.GoodsId,
+		OrderId:  order.OrderId,
+		GoodsId:  order.GoodsId,
+		PayMoney: order.Price,
 	}
 	has, err := models.GetTaobaoOrder(taobaoOrder)
 	if err != nil {
-		logrus.Errorf("get taobao order[%s] error: %v", order.OrderId, err)
+		logrus.Errorf("get taobao order[%v] error: %v", order, err)
 		return err
 	}
 	if !has {
-		logrus.Errorf("get taobao order no this order[%s]", order.OrderId)
+		logrus.Errorf("get taobao order no this order[%v]", order)
 		return nil
 	}
-	
+
 	logrus.Debugf("get taobao order[%v]", taobaoOrder)
 
 	if taobaoOrder.GoodsState == TAOBAO_ORDER_SETTLEMENT || taobaoOrder.GoodsState == TAOBAO_ORDER_SUCCESS {
