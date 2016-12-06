@@ -13,7 +13,8 @@ type FxOrder struct {
 	ID          int64   `xorm:"pk autoincr"`
 	AccountId   int64   `xorm:"not null default 0 int index"`
 	UnionId     string  `xorm:"not null default '' varchar(128) index"`
-	OrderId     string  `xorm:"not null default '' varchar(128) unique"`
+	OrderId     string  `xorm:"varchar(128) not null default '' unique(uni_fx_order_id)"`
+	GoodsId     string  `xorm:"varchar(128) not null default '' unique(uni_fx_order_id)"`
 	OrderName   string  `xorm:"not null default '' varchar(128)"`
 	Price       float32 `xorm:"not null default 0.000 decimal(10,3)"`
 	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)" json:"-"`
@@ -45,8 +46,8 @@ type FxOrderSettlementRecord struct {
 }
 
 func CreateFxOrder(info *FxOrder) error {
-	if info.UnionId == "" || info.OrderId == "" {
-		return fmt.Errorf("fx order union_id[%s] order_id[%s] cannot be nil.", info.UnionId, info.OrderId)
+	if info.UnionId == "" || info.OrderId == "" || info.GoodsId == "" {
+		return fmt.Errorf("fx order union_id[%s] order_id[%s] goods_id[%s] cannot be nil.", info.UnionId, info.OrderId, info.GoodsId)
 	}
 
 	now := time.Now().Unix()

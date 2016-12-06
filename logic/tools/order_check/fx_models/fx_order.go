@@ -12,7 +12,8 @@ type FxOrder struct {
 	ID          int64   `xorm:"pk autoincr"`
 	AccountId   int64   `xorm:"not null default 0 int index"`
 	UnionId     string  `xorm:"not null default '' varchar(128) index"`
-	OrderId     string  `xorm:"not null default '' varchar(128) unique"`
+	OrderId     string  `xorm:"not null default '' varchar(128) unique 'UNI_fx_order'"`
+	GoodsId     string  `xorm:"not null default '' varchar(128) unique 'UNI_fx_order'"`
 	OrderName   string  `xorm:"not null default '' varchar(128)"`
 	Price       float32 `xorm:"not null default 0.000 decimal(10,3)"`
 	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)" json:"-"`
