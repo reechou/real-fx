@@ -251,7 +251,7 @@ func GetFxOrderWaitSettlementRecordListCount(unionId string) (int64, error) {
 }
 
 func GetFxOrderWaitSettlementRecordListCountById(accountId int64, status int) (int64, error) {
-	count, err := x.Table("fx_order_wait_settlement_record").Join("LEFT", "fx_order", "fx_order_wait_settlement_record.order_id = fx_order.order_id").
+	count, err := x.Table("fx_order_wait_settlement_record").Join("LEFT", "fx_order", "fx_order_wait_settlement_record.order_id = fx_order.order_id and fx_order_wait_settlement_record.goods_id = fx_order.goods_id").
 		Where("fx_order_wait_settlement_record.account_id = ?", accountId).
 		And("fx_order_wait_settlement_record.level = 0").
 		And("fx_order.status = ?", status).
@@ -277,7 +277,7 @@ func GetFxOrderWaitSettlementRecordList(unionId string, offset, num int64) ([]Fx
 func GetFxOrderWaitSettlementRecordListById(accountId int64, offset, num int64, status int) ([]FxOrderWaitSettlementRecord, error) {
 	var fxOrderWSMRecordList []FxOrderWaitSettlementRecord
 	err := x.Table("fx_order_wait_settlement_record").Select("fx_order_wait_settlement_record.*").
-		Join("LEFT", "fx_order", "fx_order_wait_settlement_record.order_id = fx_order.order_id").Where("fx_order_wait_settlement_record.account_id = ?", accountId).
+		Join("LEFT", "fx_order", "fx_order_wait_settlement_record.order_id = fx_order.order_id and fx_order_wait_settlement_record.goods_id = fx_order.goods_id").Where("fx_order_wait_settlement_record.account_id = ?", accountId).
 		And("fx_order_wait_settlement_record.level = 0").And("fx_order.status = ?", status).Find(&fxOrderWSMRecordList)
 	//err := x.Where("account_id = ?", accountId).And("level = 0").Desc("created_at").Limit(int(num), int(offset)).Find(&fxOrderWSMRecordList)
 	if err != nil {
