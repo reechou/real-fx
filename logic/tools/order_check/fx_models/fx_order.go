@@ -35,17 +35,18 @@ type FxOrderWaitSettlementRecord struct {
 }
 
 type FxOrderSettlementRecord struct {
-	ID          int64   `xorm:"pk autoincr"`
-	AccountId   int64   `xorm:"not null default 0 int index"`
-	UnionId     string  `xorm:"not null default '' varchar(128) index"`
-	OrderId     string  `xorm:"not null default '' varchar(128)"`
-	GoodsId     string  `xorm:"not null default '' varchar(128)"`
-	Price       float32 `xorm:"not null default 0.000 decimal(10,3)"`
-	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)"`
-	SourceId    string  `xorm:"not null default '' varchar(128)"`
-	Level       int64   `xorm:"not null default 0 int index"`
-	CreatedAt   int64   `xorm:"not null default 0 int index"`
-	UpdatedAt   int64   `xorm:"not null default 0 int"`
+	ID           int64   `xorm:"pk autoincr"`
+	AccountId    int64   `xorm:"not null default 0 int index"`
+	UnionId      string  `xorm:"not null default '' varchar(128) index"`
+	OrderId      string  `xorm:"not null default '' varchar(128)"`
+	GoodsId      string  `xorm:"not null default '' varchar(128)"`
+	Price        float32 `xorm:"not null default 0.000 decimal(10,3)"`
+	ReturnMoney  float32 `xorm:"not null default 0.000 decimal(9,3)"`
+	SourceId     string  `xorm:"not null default '' varchar(128)"`
+	Level        int64   `xorm:"not null default 0 int index"`
+	OrderCreated int64   `xorm:"not null default 0 int index"`
+	CreatedAt    int64   `xorm:"not null default 0 int index"`
+	UpdatedAt    int64   `xorm:"not null default 0 int"`
 }
 
 func GetFxOrderInfo(info *FxOrder) (bool, error) {
@@ -89,8 +90,8 @@ func CreateFxOrderSettlementRecordList(list []FxOrderSettlementRecord) error {
 	return nil
 }
 
-func GetFxOrderSettlementRecordListCountById(accountId int64) (int64, error) {
-	count, err := x.Where("account_id = ?", accountId).Count(&FxOrderSettlementRecord{})
+func GetFxOrderSettlementRecordListCountById(accountId, startTime, endTime int64) (int64, error) {
+	count, err := x.Where("account_id = ?", accountId).And("order_created >= ?", startTime).And("order_created <= ?", endTime).Count(&FxOrderSettlementRecord{})
 	if err != nil {
 		logrus.Errorf("account_id[%d] get fx order settlement record list count error: %v", accountId, err)
 		return 0, err

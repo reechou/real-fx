@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/reechou/real-fx/logic/ext"
 	"github.com/reechou/real-fx/logic/models"
 )
 
@@ -34,6 +35,30 @@ func (daemon *Daemon) CreateFxAccount(fxAccount *models.FxAccount, fxAccountFoll
 			CreatedAt:  time.Now().Unix(),
 		}
 		models.CreateFxAccountHistoryList([]models.FxAccountHistory{h})
+
+		// send msg to wechat
+		has, err := models.GetFxAccount(superFxAccount)
+		if err != nil {
+			logrus.Errorf("get super fx account info error: %v", err)
+		} else {
+			if has {
+				superFxAccountFollow := &models.FxAccountFollow{
+					UnionId:   superFxAccount.UnionId,
+					WXAccount: WX_WGLS_ACCOUNT,
+				}
+				err = models.GetFxAccountFollowFromUnionId(superFxAccountFollow)
+				if err == nil {
+					wxSendInfo := &ext.WeixinMsgSendReq{
+						OpenId:    superFxAccountFollow.OpenId,
+						Score:     float32(daemon.cfg.Score.FollowScore),
+						LeftScore: superFxAccount.CanWithdrawals,
+						Reason:    FxHistoryDescs[FX_HISTORY_TYPE_INVITE],
+						UserName:  superFxAccount.Name,
+					}
+					daemon.we.AsyncWxSendMsg(wxSendInfo)
+				}
+			}
+		}
 	}
 	if err := models.CreateFxAccountFollow(fxAccountFollow); err != nil {
 		logrus.Errorf("create fx account follow error: %v", err)
@@ -75,6 +100,30 @@ func (daemon *Daemon) UpdateFxAccountSignTime(fxAccount *models.FxAccount) (int6
 			CreatedAt:  time.Now().Unix(),
 		}
 		models.CreateFxAccountHistoryList([]models.FxAccountHistory{h})
+
+		// send msg to wechat
+		has, err := models.GetFxAccount(fxAccount)
+		if err != nil {
+			logrus.Errorf("get fx account info error: %v", err)
+		} else {
+			if has {
+				fxAccountFollow := &models.FxAccountFollow{
+					UnionId:   fxAccount.UnionId,
+					WXAccount: WX_WGLS_ACCOUNT,
+				}
+				err = models.GetFxAccountFollowFromUnionId(fxAccountFollow)
+				if err == nil {
+					wxSendInfo := &ext.WeixinMsgSendReq{
+						OpenId:    fxAccountFollow.OpenId,
+						Score:     float32(daemon.cfg.Score.SignScore),
+						LeftScore: fxAccount.CanWithdrawals,
+						Reason:    FxHistoryDescs[FX_HISTORY_TYPE_SIGN],
+						UserName:  fxAccount.Name,
+					}
+					daemon.we.AsyncWxSendMsg(wxSendInfo)
+				}
+			}
+		}
 	}
 
 	return affected, nil

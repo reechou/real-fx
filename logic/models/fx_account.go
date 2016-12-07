@@ -222,6 +222,17 @@ func GetFxAccountFollow(info *FxAccountFollow) error {
 	return nil
 }
 
+func GetFxAccountFollowFromUnionId(info *FxAccountFollow) error {
+	has, err := x.Where("wx_account = ?", info.WXAccount).And("union_id = ?", info.UnionId).Get(info)
+	if err != nil {
+		return err
+	}
+	if !has {
+		return fmt.Errorf("cannot find fx account from wx_account[%s] union_id[%s]", info.WXAccount, info.UnionId)
+	}
+	return nil
+}
+
 func CreateFxAccountMonthAchievement(info *FxAccountMonthAchievement) error {
 	if info.UnionId == "" || info.Month == "" {
 		return fmt.Errorf("argvs cannot be nil")

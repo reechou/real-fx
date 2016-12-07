@@ -1,13 +1,13 @@
 package controller
 
 import (
+	"fmt"
 	"sync"
 	"time"
-	"fmt"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/reechou/real-fx/logic/tools/order_check/config"
 	"github.com/reechou/real-fx/logic/tools/order_check/act"
+	"github.com/reechou/real-fx/logic/tools/order_check/config"
 	"github.com/reechou/real-fx/logic/tools/order_check/fx_models"
 )
 
@@ -125,16 +125,17 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 
 	var recordList []fx_models.FxOrderSettlementRecord
 	recordList = append(recordList, fx_models.FxOrderSettlementRecord{
-		AccountId:   orderFxAccount.ID,
-		UnionId:     order.UnionId,
-		OrderId:     order.OrderId,
-		GoodsId:     order.GoodsId,
-		Price:       order.Price,
-		ReturnMoney: levelReturns[0],
-		SourceId:    order.UnionId,
-		Level:       0,
-		CreatedAt:   now,
-		UpdatedAt:   now,
+		AccountId:    orderFxAccount.ID,
+		UnionId:      order.UnionId,
+		OrderId:      order.OrderId,
+		GoodsId:      order.GoodsId,
+		Price:        order.Price,
+		ReturnMoney:  levelReturns[0],
+		SourceId:     order.UnionId,
+		Level:        0,
+		OrderCreated: order.CreatedAt,
+		CreatedAt:    now,
+		UpdatedAt:    now,
 	})
 
 	var historyList []fx_models.FxAccountHistory
@@ -146,6 +147,8 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 		ChangeDesc: FxHistoryDescs[FX_HISTORY_TYPE_ORDER_0],
 		CreatedAt:  now,
 	})
+
+	var upperFxAccount *fx_models.FxAccount
 
 	unionId := orderFxAccount.Superior
 	for i := 1; i < len(levelReturns); i++ {
@@ -163,6 +166,9 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 			logrus.Debugf("do settlement no this account[%s]", unionId)
 			break
 		}
+		if i == 1 {
+			upperFxAccount = fxAccount
+		}
 		// add return money
 		err = fx_models.AddFxAccountMoney(levelReturns[i], fxAccount)
 		if err != nil {
@@ -177,7 +183,7 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 		//	logrus.Errorf("do settlement order[%v] update fx account month union_id[%s][level-%d] order error: %v", order, unionId, i, err)
 		//	return err
 		//}
-		
+
 		//recordList = append(recordList, fx_models.FxOrderSettlementRecord{
 		//	AccountId:   fxAccount.ID,
 		//	UnionId:     unionId,
@@ -188,7 +194,7 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 		//	CreatedAt:   now,
 		//	UpdatedAt:   now,
 		//})
-		
+
 		historyList = append(historyList, fx_models.FxAccountHistory{
 			AccountId:  fxAccount.ID,
 			UnionId:    fxAccount.UnionId,
@@ -199,7 +205,7 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 		})
 		unionId = fxAccount.Superior
 	}
-	
+
 	err = fx_models.CreateFxOrderSettlementRecordList(recordList)
 	if err != nil {
 		logrus.Errorf("create fx order[%v] settlement record list error: %v", order, err)
@@ -210,7 +216,7 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 		logrus.Errorf("create fx order[%v] fx account history list error: %v", order, err)
 	}
 	// check order act
-	sw.act.CheckActOfOrder(orderFxAccount)
+	sw.act.CheckActOfOrder(orderFxAccount, upperFxAccount)
 }
 
 func (sw *SettlementWorker) updateFxAccountMonth(month, unionId string, returnMoney float32) error {

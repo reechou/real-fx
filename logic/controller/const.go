@@ -34,6 +34,12 @@ const (
 	FX_HISTORY_TYPE_SCORE_MALL        // 积分商城
 )
 
+const (
+	WX_WGLS_ACCOUNT      = "gh_1306ea147f00"
+	WX_SEND_FIRST_ADD    = "网购猎手积分变动!"
+	WX_SEND_FIRST_REMARK = "感谢您的使用！"
+)
+
 var (
 	FxHistoryDescs = []string{
 		"每日签到",

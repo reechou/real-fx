@@ -78,15 +78,11 @@ func (self *ActLogic) init() {
 	}
 }
 
-func (self *ActLogic) CheckActOfOrder(fxAccount *fx_models.FxAccount) {
-	count, err := self.checkOrderCount(fxAccount)
-	if err != nil {
-		logrus.Errorf("check account[%v] order error: %v", fxAccount, err)
-		return
-	}
-	now := time.Now().Unix()
+func (self *ActLogic) CheckActOfOrder(fxAccount *fx_models.FxAccount, upperFxAccount *fx_models.FxAccount) {
 	for _, v := range self.actList {
-		if now < v.StartTime || now > v.EndTime {
+		count, err := self.checkOrderCount(fxAccount, v)
+		if err != nil {
+			logrus.Errorf("check account[%v] act[%v] order error: %v", fxAccount, v, err)
 			continue
 		}
 		if v.ActValue == count {
@@ -95,8 +91,8 @@ func (self *ActLogic) CheckActOfOrder(fxAccount *fx_models.FxAccount) {
 	}
 }
 
-func (self *ActLogic) checkOrderCount(fxAccount *fx_models.FxAccount) (int64, error) {
-	return fx_models.GetFxOrderSettlementRecordListCountById(fxAccount.ID)
+func (self *ActLogic) checkOrderCount(fxAccount *fx_models.FxAccount, act *ActInfo) (int64, error) {
+	return fx_models.GetFxOrderSettlementRecordListCountById(fxAccount.ID, act.StartTime, act.EndTime)
 }
 
 func (self *ActLogic) addActReward(fxAccount *fx_models.FxAccount, info *ActInfo) error {
