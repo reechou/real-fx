@@ -235,6 +235,9 @@ func GetFxOrderWaitSettlementRecordListSumById(accountId int64, status int64) (f
 		return 0, nil
 	}
 	sumMoney := results[0]["sum_money"]
+	if string(sumMoney) == "" {
+		return 0, nil
+	}
 	sum, err := strconv.ParseFloat(string(sumMoney), 64)
 	if err != nil {
 		logrus.Errorf("account_id[%d] get fx order wait settlement record list strconv sum(return_money) error: %v", accountId, err)

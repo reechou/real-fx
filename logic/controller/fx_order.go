@@ -60,6 +60,9 @@ func (daemon *Daemon) CreateFxOrder(info *models.FxOrder) error {
 		fxAccount := &models.FxAccount{
 			UnionId: unionId,
 		}
+		if fxAccount.UnionId == GodSalesman {
+			break
+		}
 		has, err := models.GetFxAccount(fxAccount)
 		if err != nil {
 			logrus.Errorf("create wait settlement order[%v] in level[%d] get fx account from union_id[%d] error: %v",

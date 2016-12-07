@@ -18,6 +18,7 @@ type FxAccount struct {
 	Phone          string  `xorm:"not null default '' varchar(16)"`
 	Name           string  `xorm:"not null default '' varchar(128)"`
 	CanWithdrawals float32 `xorm:"not null default 0.000 decimal(10,3)"`
+	AllScore       float32 `xorm:"not null default 0.000 decimal(10,3) index"`
 	Ticket         string  `xorm:"not null default '' varchar(128)"`
 	Superior       string  `xorm:"not null default '' varchar(128) index"`
 	SignTime       int64   `xorm:"not null default 0 int index"`
@@ -94,8 +95,8 @@ func UpdateFxAccountSignTime(allAdd float32, info *FxAccount) (int64, error) {
 	timeStr := time.Now().Format("2006-01-02")
 	t, _ := time.Parse("2006-01-02", timeStr)
 	dayZero := t.Unix() - 8*3600
-	result, err := x.Exec("update fx_account set can_withdrawals=can_withdrawals+?, updated_at=?, sign_time=? where union_id=? and sign_time < ?",
-		allAdd, now, now, info.UnionId, dayZero)
+	result, err := x.Exec("update fx_account set can_withdrawals=can_withdrawals+?, all_score=all_score+?, updated_at=?, sign_time=? where union_id=? and sign_time < ?",
+		allAdd, allAdd, now, now, info.UnionId, dayZero)
 	if err != nil {
 		logrus.Errorf("update fx_account sign time error: %v", err)
 		return 0, err
@@ -111,8 +112,8 @@ func UpdateFxAccountSignTime(allAdd float32, info *FxAccount) (int64, error) {
 func AddFxAccountMoney(allAdd float32, info *FxAccount) error {
 	info.UpdatedAt = time.Now().Unix()
 	var err error
-	_, err = x.Exec("update fx_account set can_withdrawals=can_withdrawals+?, updated_at=? where union_id=?",
-		allAdd, info.UpdatedAt, info.UnionId)
+	_, err = x.Exec("update fx_account set can_withdrawals=can_withdrawals+?, all_score=all_score+?, updated_at=? where union_id=?",
+		allAdd, allAdd, info.UpdatedAt, info.UnionId)
 	if err != nil {
 		return err
 	}

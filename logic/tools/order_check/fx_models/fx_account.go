@@ -13,6 +13,7 @@ type FxAccount struct {
 	Phone          string  `xorm:"not null default '' varchar(16)"`
 	Name           string  `xorm:"not null default '' varchar(128)"`
 	CanWithdrawals float32 `xorm:"not null default 0.000 decimal(10,3)"`
+	AllScore       float32 `xorm:"not null default 0.000 decimal(10,3) index"`
 	Ticket         string  `xorm:"not null default '' varchar(128)"`
 	Superior       string  `xorm:"not null default '' varchar(128) index"`
 	Status         int64   `xorm:"not null default 0 int"`
@@ -32,7 +33,8 @@ type FxAccountMonthAchievement struct {
 func AddFxAccountMoney(allAdd float32, info *FxAccount) error {
 	info.UpdatedAt = time.Now().Unix()
 	var err error
-	_, err = x.Exec("update fx_account set can_withdrawals=can_withdrawals+?, updated_at=? where union_id=?", allAdd, info.UpdatedAt, info.UnionId)
+	_, err = x.Exec("update fx_account set can_withdrawals=can_withdrawals+?, all_score=all_score+?, updated_at=? where union_id=?",
+		allAdd, allAdd, info.UpdatedAt, info.UnionId)
 	return err
 }
 
