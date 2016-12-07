@@ -166,6 +166,16 @@ func GetLowerPeopleCount(unionId string) (int64, error) {
 	return count, nil
 }
 
+func GetFxAccountRank(offset, num int64) ([]FxAccount, error) {
+	var rankList []FxAccount
+	err := x.Desc("all_score").Limit(int(num), int(offset)).Find(&rankList)
+	if err != nil {
+		logrus.Errorf("get fx account rank list error: %v", err)
+		return nil, err
+	}
+	return rankList, nil
+}
+
 func GetLowerPeople(unionId string, offset, num int64) ([]FxAccount, error) {
 	var lowerPeoples []FxAccount
 	err := x.Where("superior = ?", unionId).Desc("created_at").Limit(int(num), int(offset)).Find(&lowerPeoples)

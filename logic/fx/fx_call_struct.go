@@ -50,6 +50,11 @@ type getFxLowerPeopleListReq struct {
 	Num     int64  `json:"num"`
 }
 
+type getFxAccountRankReq struct {
+	Offset int64 `json:"offset"`
+	Num    int64 `json:"num"`
+}
+
 type getFxAccountHistoryListReq struct {
 	UnionId string `json:"unionId"`
 	Offset  int64  `json:"offset"`

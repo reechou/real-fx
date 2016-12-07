@@ -94,6 +94,10 @@ func (daemon *Daemon) GetFxAccount(fxAccount *models.FxAccount) error {
 	return nil
 }
 
+func (daemon *Daemon) GetFxAccountRank(offset, num int64) ([]models.FxAccount, error) {
+	return models.GetFxAccountRank(offset, num)
+}
+
 func (daemon *Daemon) GetLowerPeopleCount(unionId string) (int64, error) {
 	return models.GetLowerPeopleCount(unionId)
 }

@@ -32,6 +32,7 @@ func (fxr *FXRouter) initRoutes() {
 		router.NewPostRoute("/fx/get_fx_accout", fxr.getFxAccount),
 		router.NewPostRoute("/fx/get_fx_accout_unionid", fxr.getFxAccountFollow),
 		router.NewPostRoute("/fx/get_fx_lower_people_list", fxr.getFxLowerPeopleList),
+		router.NewPostRoute("/fx/get_fx_account_rank", fxr.getFxAccountRank),
 		// about fx account history
 		router.NewPostRoute("/fx/get_fx_history", fxr.getFxAccountHistoryList),
 		router.NewPostRoute("/fx/get_fx_history_by_type", fxr.getFxAccountHistoryListByType),

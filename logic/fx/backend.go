@@ -16,6 +16,7 @@ type fxAccountBackend interface {
 	GetFxAccountFollow(info *models.FxAccountFollow) error
 	GetLowerPeopleCount(unionId string) (int64, error)
 	GetLowerPeopleList(unionId string, offset, num int64) ([]models.FxAccount, error)
+	GetFxAccountRank(offset, num int64) ([]models.FxAccount, error)
 }
 
 type fxAccountHistoryBackend interface {
