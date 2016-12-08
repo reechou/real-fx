@@ -1,8 +1,9 @@
 package controller
 
 const (
-	GodSalesman = "godlike"
-	MaxSalesman = 99900
+	TestSalesman = "onKFit7N1MwqF-G3CTVCjS_qv6kk"
+	GodSalesman  = "godlike"
+	MaxSalesman  = 99900
 )
 
 const (

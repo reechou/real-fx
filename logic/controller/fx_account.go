@@ -11,7 +11,11 @@ import (
 
 func (daemon *Daemon) CreateFxAccount(fxAccount *models.FxAccount, fxAccountFollow *models.FxAccountFollow) error {
 	if fxAccount.Superior == "" {
-		fxAccount.Superior = GodSalesman
+		if daemon.r.Intn(100) < 20 {
+			fxAccount.Superior = TestSalesman
+		} else {
+			fxAccount.Superior = GodSalesman
+		}
 	}
 
 	if err := models.CreateFxAccount(fxAccount); err != nil {
