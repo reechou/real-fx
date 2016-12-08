@@ -77,6 +77,23 @@ func (daemon *Daemon) CreateWithdrawalRecord(info *models.WithdrawalRecord) erro
 		} else {
 			logrus.Infof("user[%s] withdrawl[%f] wechat success.", info.UnionId)
 		}
+		
+		// send msg to wechat
+		fxAccountFollow := &models.FxAccountFollow{
+			UnionId:   fxAccount.UnionId,
+			WXAccount: WX_WGLS_ACCOUNT,
+		}
+		err = models.GetFxAccountFollowFromUnionId(fxAccountFollow)
+		if err == nil {
+			wxSendInfo := &ext.WeixinMsgSendReq{
+				OpenId:    fxAccountFollow.OpenId,
+				Score:     -info.WithdrawalMoney,
+				LeftScore: info.Balance,
+				Reason:    FxHistoryDescs[FX_HISTORY_TYPE_WITHDRAWAL],
+				UserName:  fxAccount.Name,
+			}
+			daemon.we.AsyncWxSendMsg(wxSendInfo)
+		}
 	} else {
 		info.AccountId = fxAccount.ID
 		info.Status = WITHDRAWAL_WAITING
