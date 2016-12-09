@@ -40,7 +40,7 @@ func (self *ActLogic) init() {
 	for _, v := range self.cfg.ActList {
 		vlist := strings.Split(v, "|")
 		if len(vlist) != 8 {
-			logrus.Errorf("act[%s] error.", v)
+			logrus.Errorf("act[%s] error, %v.", v, vlist)
 			continue
 		}
 		ai := &ActInfo{
