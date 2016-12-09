@@ -62,7 +62,7 @@ func NewConfig() *Config {
 	initFlag(c)
 
 	if c.Path == "" {
-		fmt.Println("real-fx must run with config file, please check.")
+		fmt.Println("order_check must run with config file, please check.")
 		os.Exit(0)
 	}
 

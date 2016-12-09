@@ -1,9 +1,9 @@
 package act
 
 import (
-	"time"
-	"strings"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/reechou/real-fx/logic/tools/order_check/config"
@@ -11,13 +11,14 @@ import (
 )
 
 type ActInfo struct {
-	ActType    string
-	ActHisType int
-	ActDesc    string
-	ActValue   int64
-	ActReward  float32
-	StartTime  int64
-	EndTime    int64
+	ActType        string
+	ActHisType     int
+	ActDesc        string
+	ActValue       int64
+	ActReward      float32
+	ActUpperReward float32
+	StartTime      int64
+	EndTime        int64
 }
 
 type ActLogic struct {
@@ -38,7 +39,7 @@ func NewActLogic(cfg *config.Config) *ActLogic {
 func (self *ActLogic) init() {
 	for _, v := range self.cfg.ActList {
 		vlist := strings.Split(v, "|")
-		if len(vlist) != 7 {
+		if len(vlist) != 8 {
 			logrus.Errorf("act[%s] error.", v)
 			continue
 		}
@@ -61,19 +62,24 @@ func (self *ActLogic) init() {
 			continue
 		}
 		ai.ActReward = float32(reward)
-		startTime, err := strconv.ParseInt(vlist[5], 10, 0)
+		supperReward, err := strconv.ParseFloat(vlist[5], 32)
+		if err != nil {
+			continue
+		}
+		ai.ActUpperReward = float32(supperReward)
+		startTime, err := strconv.ParseInt(vlist[6], 10, 0)
 		if err != nil {
 			continue
 		}
 		ai.StartTime = startTime
-		endTime, err := strconv.ParseInt(vlist[6], 10, 0)
+		endTime, err := strconv.ParseInt(vlist[7], 10, 0)
 		if err != nil {
 			continue
 		}
 		ai.EndTime = endTime
-		
+
 		logrus.Debugf("load act: %v", ai)
-		
+
 		self.actList = append(self.actList, ai)
 	}
 }
@@ -86,7 +92,7 @@ func (self *ActLogic) CheckActOfOrder(fxAccount *fx_models.FxAccount, upperFxAcc
 			continue
 		}
 		if v.ActValue == count {
-			self.addActReward(fxAccount, v)
+			self.addActReward(fxAccount, upperFxAccount, v)
 		}
 	}
 }
@@ -95,17 +101,22 @@ func (self *ActLogic) checkOrderCount(fxAccount *fx_models.FxAccount, act *ActIn
 	return fx_models.GetFxOrderSettlementRecordListCountById(fxAccount.ID, act.StartTime, act.EndTime)
 }
 
-func (self *ActLogic) addActReward(fxAccount *fx_models.FxAccount, info *ActInfo) error {
+func (self *ActLogic) addActReward(fxAccount *fx_models.FxAccount, upperFxAccount *fx_models.FxAccount, info *ActInfo) error {
 	err := fx_models.AddFxAccountMoney(info.ActReward, fxAccount)
 	if err != nil {
 		logrus.Errorf("act[%s] add account[%v] money error: %v", info, fxAccount, err)
 		return err
 	}
-	self.addAccountHistory(fxAccount, info)
+	err = fx_models.AddFxAccountMoney(info.ActUpperReward, upperFxAccount)
+	if err != nil {
+		logrus.Errorf("act[%s] add upper account[%v] money error: %v", info, upperFxAccount, err)
+		return err
+	}
+	self.addAccountHistory(fxAccount, upperFxAccount, info)
 	return nil
 }
 
-func (self *ActLogic) addAccountHistory(fxAccount *fx_models.FxAccount, info *ActInfo) {
+func (self *ActLogic) addAccountHistory(fxAccount *fx_models.FxAccount, upperFxAccount *fx_models.FxAccount, info *ActInfo) {
 	var historyList []fx_models.FxAccountHistory
 	historyList = append(historyList, fx_models.FxAccountHistory{
 		AccountId:  fxAccount.ID,
@@ -115,8 +126,16 @@ func (self *ActLogic) addAccountHistory(fxAccount *fx_models.FxAccount, info *Ac
 		ChangeDesc: info.ActDesc,
 		CreatedAt:  time.Now().Unix(),
 	})
+	historyList = append(historyList, fx_models.FxAccountHistory{
+		AccountId:  upperFxAccount.ID,
+		UnionId:    upperFxAccount.UnionId,
+		Score:      info.ActUpperReward,
+		ChangeType: int64(info.ActHisType),
+		ChangeDesc: "上线 " + info.ActDesc,
+		CreatedAt:  time.Now().Unix(),
+	})
 	err := fx_models.CreateFxAccountHistoryList(historyList)
 	if err != nil {
-		logrus.Errorf("account[%v] act[%v] fx account history list error: %v", fxAccount, info, err)
+		logrus.Errorf("account[%v] upperAccount[%v] act[%v] fx account history list error: %v", fxAccount, upperFxAccount, info, err)
 	}
 }
