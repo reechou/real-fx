@@ -46,7 +46,7 @@ func (ocw *OrderCheck) Stop() {
 
 func (ocw *OrderCheck) Run() {
 	logrus.Debugf("start run order check...")
-	//ocw.runCheck()
+	ocw.runCheck()
 	for {
 		select {
 		case <-time.After(time.Duration(ocw.cfg.WorkerInfo.OrderCheckInterval) * time.Second):

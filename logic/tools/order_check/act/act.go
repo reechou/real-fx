@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"fmt"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/reechou/real-fx/logic/tools/order_check/config"
@@ -131,7 +132,7 @@ func (self *ActLogic) addAccountHistory(fxAccount *fx_models.FxAccount, upperFxA
 		UnionId:    upperFxAccount.UnionId,
 		Score:      info.ActUpperReward,
 		ChangeType: int64(info.ActHisType),
-		ChangeDesc: "上线 " + info.ActDesc,
+		ChangeDesc: fmt.Sprintf("下线 %s %s", fxAccount.Name, info.ActDesc),
 		CreatedAt:  time.Now().Unix(),
 	})
 	err := fx_models.CreateFxAccountHistoryList(historyList)

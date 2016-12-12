@@ -63,6 +63,9 @@ func (sw *SettlementWorker) runWorker(orderChan chan *fx_models.FxOrder, stop ch
 }
 
 func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
+	//if order.OrderId != "2889128634894307" {
+	//	return
+	//}
 	if order.Status != FX_ORDER_WAIT {
 		logrus.Errorf("order[%v] cannot be settlement.", order)
 		return
@@ -71,11 +74,18 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 	// check status
 	checkOrder := &fx_models.FxOrder{
 		OrderId: order.OrderId,
+		GoodsId: order.GoodsId,
+		Price:   order.Price,
 	}
-	_, err := fx_models.GetFxOrderInfo(checkOrder)
+	has, err := fx_models.GetFxOrderInfo(checkOrder)
 	if err != nil {
 		logrus.Errorf("get fx order[%v] status error: %v", order, err)
 		return
+	}
+	if !has {
+		logrus.Errorf("get fx order[%v] has no this order", order)
+		return
+		
 	}
 	if checkOrder.Status != FX_ORDER_WAIT {
 		logrus.Errorf("order[%v] cannot be settlement, order status: %d", order, checkOrder.Status)
@@ -112,7 +122,7 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 	orderFxAccount := &fx_models.FxAccount{
 		UnionId: order.UnionId,
 	}
-	has, err := fx_models.GetFxAccount(orderFxAccount)
+	has, err = fx_models.GetFxAccount(orderFxAccount)
 	if err != nil {
 		logrus.Errorf("do settlement order[%v] in level[0] get fx account from union_id[%d] error: %v",
 			order, order.UnionId, err)

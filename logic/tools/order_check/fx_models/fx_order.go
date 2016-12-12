@@ -15,7 +15,7 @@ type FxOrder struct {
 	OrderId     string  `xorm:"varchar(128) not null default '' unique(uni_fx_order_id)"`
 	GoodsId     string  `xorm:"varchar(128) not null default '' unique(uni_fx_order_id)"`
 	OrderName   string  `xorm:"not null default '' varchar(128)"`
-	Price       float32 `xorm:"not null default 0.000 decimal(10,3) unique(uni_fx_order_id)"`
+	Price       float32 `xorm:"not null default 0.00 float(9,2) unique(uni_fx_order_id)"`
 	ReturnMoney float32 `xorm:"not null default 0.000 decimal(9,3)" json:"-"`
 	Status      int64   `xorm:"not null default 0 int index"`
 	CreatedAt   int64   `xorm:"not null default 0 int index"`
@@ -50,7 +50,7 @@ type FxOrderSettlementRecord struct {
 }
 
 func GetFxOrderInfo(info *FxOrder) (bool, error) {
-	has, err := x.Where("order_id = ?", info.OrderId).Get(info)
+	has, err := x.Where("order_id = ?", info.OrderId).And("goods_id = ?", info.GoodsId).And("price = ?", info.Price).Get(info)
 	if err != nil {
 		logrus.Errorf("get fx order[%s] error: %v", info.OrderId, err)
 		return false, fmt.Errorf("get fx order[%s] error: %v", info.OrderId, err)
@@ -91,7 +91,7 @@ func CreateFxOrderSettlementRecordList(list []FxOrderSettlementRecord) error {
 }
 
 func GetFxOrderSettlementRecordListCountById(accountId, startTime, endTime int64) (int64, error) {
-	count, err := x.Where("account_id = ?", accountId).And("order_created >= ?", startTime).And("order_created <= ?", endTime).Count(&FxOrderSettlementRecord{})
+	count, err := x.Where("account_id = ?", accountId).And("level = 0").And("order_created >= ?", startTime).And("order_created <= ?", endTime).Count(&FxOrderSettlementRecord{})
 	if err != nil {
 		logrus.Errorf("account_id[%d] get fx order settlement record list count error: %v", accountId, err)
 		return 0, err
