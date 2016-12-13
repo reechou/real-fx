@@ -85,7 +85,7 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 	if !has {
 		logrus.Errorf("get fx order[%v] has no this order", order)
 		return
-		
+
 	}
 	if checkOrder.Status != FX_ORDER_WAIT {
 		logrus.Errorf("order[%v] cannot be settlement, order status: %d", order, checkOrder.Status)
@@ -177,7 +177,11 @@ func (sw *SettlementWorker) do(order *fx_models.FxOrder) {
 			break
 		}
 		if i == 1 {
-			upperFxAccount = fxAccount
+			upperFxAccount = &fx_models.FxAccount{
+				ID:      fxAccount.ID,
+				UnionId: fxAccount.UnionId,
+				Name:    fxAccount.Name,
+			}
 		}
 		// add return money
 		err = fx_models.AddFxAccountMoney(levelReturns[i], fxAccount)
