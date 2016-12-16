@@ -80,14 +80,14 @@ func (fxr *FXRouter) getFxWithdrawalRecordSum(ctx context.Context, w http.Respon
 	if err := utils.ParseForm(r); err != nil {
 		return err
 	}
-	
+
 	req := &getWithdrawalSumReq{}
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 		return err
 	}
-	
+
 	rsp := &FxResponse{Code: RspCodeOK}
-	
+
 	total, err := fxr.backend.GetWithdrawalRecordSum(req.UnionId)
 	if err != nil {
 		logrus.Errorf("Error get fx withdrawal record sum: %v", err)
@@ -95,6 +95,68 @@ func (fxr *FXRouter) getFxWithdrawalRecordSum(ctx context.Context, w http.Respon
 		rsp.Msg = fmt.Sprintf("Error get fx withdrawal record sum: %v", err)
 	} else {
 		rsp.Data = total
+	}
+
+	return utils.WriteJSON(w, http.StatusOK, rsp)
+}
+
+func (fxr *FXRouter) getFxWithdrawalRecordErrorList(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+	if err := utils.ParseForm(r); err != nil {
+		return err
+	}
+
+	req := &getWithdrawalErrorListReq{}
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		return err
+	}
+
+	rsp := &FxResponse{Code: RspCodeOK}
+
+	type FxWithdrawalRecordErrorList struct {
+		Count int64                          `json:"count"`
+		List  []models.WithdrawalRecordError `json:"list"`
+	}
+	count, err := fxr.backend.GetWithdrawalErrorRecordListCount()
+	if err != nil {
+		logrus.Errorf("Error get fx withdrawal error msg record list count: %v", err)
+		rsp.Code = RspCodeErr
+		rsp.Msg = fmt.Sprintf("Error get fx withdrawal error msg record list count: %v", err)
+	} else {
+		list, err := fxr.backend.GetWithdrawalErrorRecordList(req.Offset, req.Num)
+		if err != nil {
+			logrus.Errorf("Error get fx withdrawal error msg record list: %v", err)
+			rsp.Code = RspCodeErr
+			rsp.Msg = fmt.Sprintf("Error get fx withdrawal error msg record list: %v", err)
+		} else {
+			var listInfo FxWithdrawalRecordErrorList
+			listInfo.Count = count
+			listInfo.List = list
+			rsp.Data = listInfo
+		}
+	}
+
+	return utils.WriteJSON(w, http.StatusOK, rsp)
+}
+
+func (fxr *FXRouter) getFxWithdrawalRecordErrorListFromName(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+	if err := utils.ParseForm(r); err != nil {
+		return err
+	}
+	
+	req := &getWithdrawalErrorListFromNameReq{}
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		return err
+	}
+	
+	rsp := &FxResponse{Code: RspCodeOK}
+	
+	list, err := fxr.backend.GetWithdrawalErrorRecordListFromName(req.Name)
+	if err != nil {
+		logrus.Errorf("Error get fx withdrawal error msg record list from name: %v", err)
+		rsp.Code = RspCodeErr
+		rsp.Msg = fmt.Sprintf("Error get fx withdrawal error msg record list from name: %v", err)
+	} else {
+		rsp.Data = list
 	}
 	
 	return utils.WriteJSON(w, http.StatusOK, rsp)

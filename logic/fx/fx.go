@@ -51,5 +51,7 @@ func (fxr *FXRouter) initRoutes() {
 		router.NewPostRoute("/fx/create_fx_withdrawal", fxr.createFxWithdrawalRecord),
 		router.NewPostRoute("/fx/get_fx_withdrawal_record", fxr.getFxWithdrawalRecordList),
 		router.NewPostRoute("/fx/get_fx_withdrawal_sum", fxr.getFxWithdrawalRecordSum),
+		router.NewPostRoute("/fx/get_fx_withdrawal_error_list", fxr.getFxWithdrawalRecordErrorList),
+		router.NewPostRoute("/fx/get_fx_withdrawal_error_list_from_name", fxr.getFxWithdrawalRecordErrorListFromName),
 	}
 }

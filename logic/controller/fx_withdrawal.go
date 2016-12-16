@@ -74,10 +74,21 @@ func (daemon *Daemon) CreateWithdrawalRecord(info *models.WithdrawalRecord) erro
 		err = daemon.we.Withdrawal(wReq)
 		if err != nil {
 			logrus.Errorf("account[%v] info[%v] wechat withdrawal error: %v", fxAccount, info, err)
+			wErrInfo := &models.WithdrawalRecordError{
+				AccountId:       fxAccount.ID,
+				UnionId:         fxAccount.UnionId,
+				Name:            fxAccount.Name,
+				WithdrawalMoney: info.WithdrawalMoney,
+				ErrorMsg:        err.Error(),
+			}
+			err = models.CreateWithdrawalRecordError(wErrInfo)
+			if err != nil {
+				logrus.Errorf("info[%v] create withdrawal error msg record error: %v", wErrInfo, err)
+			}
 		} else {
 			logrus.Infof("user[%s] withdrawl[%f] wechat success.", info.UnionId)
 		}
-		
+
 		// send msg to wechat
 		fxAccountFollow := &models.FxAccountFollow{
 			UnionId:   fxAccount.UnionId,
@@ -135,4 +146,26 @@ func (daemon *Daemon) GetWithdrawalRecordListById(accountId int64, offset, num i
 
 func (daemon *Daemon) GetWithdrawalRecordSum(unionId string) (float32, error) {
 	return models.GetWithdrawalRecordSum(unionId)
+}
+
+func (daemon *Daemon) GetWithdrawalErrorRecordListCount() (int64, error) {
+	return models.GetWithdrawalRecordErrorListCount()
+}
+
+func (daemon *Daemon) GetWithdrawalErrorRecordList(offset, num int64) ([]models.WithdrawalRecordError, error) {
+	list, err := models.GetWithdrawalRecordErrorList(offset, num)
+	if err != nil {
+		logrus.Errorf("get withdrawal error msg record list error: %v", err)
+		return nil, err
+	}
+	return list, nil
+}
+
+func (daemon *Daemon) GetWithdrawalErrorRecordListFromName(name string) ([]models.WithdrawalRecordError, error) {
+	list, err := models.GetWithdrawalRecordErrorListFromName(name)
+	if err != nil {
+		logrus.Errorf("get withdrawal error msg record list from name error: %v", err)
+		return nil, err
+	}
+	return list, nil
 }

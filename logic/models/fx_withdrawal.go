@@ -18,6 +18,16 @@ type WithdrawalRecord struct {
 	UpdatedAt       int64   `xorm:"not null default 0 int index"`
 }
 
+type WithdrawalRecordError struct {
+	ID              int64   `xorm:"pk autoincr"`
+	AccountId       int64   `xorm:"not null default 0 int index"`
+	UnionId         string  `xorm:"not null default '' varchar(128) index"`
+	Name            string  `xorm:"not null default '' varchar(128) index"`
+	WithdrawalMoney float32 `xorm:"not null default 0.000 decimal(9,3)"`
+	ErrorMsg        string  `xorm:"not null default '' varchar(512)"`
+	CreatedAt       int64   `xorm:"not null default 0 int index"`
+}
+
 func CreateWithdrawalRecord(info *WithdrawalRecord) error {
 	now := time.Now().Unix()
 	info.CreatedAt = now
@@ -105,4 +115,48 @@ func GetWithdrawalRecordSum(unionId string) (float32, error) {
 		return 0.0, err
 	}
 	return float32(total), nil
+}
+
+func CreateWithdrawalRecordError(info *WithdrawalRecordError) error {
+	now := time.Now().Unix()
+	info.CreatedAt = now
+	_, err := x.Insert(info)
+	if err != nil {
+		logrus.Errorf("create fx withdrawal error msg record[%v] error: %v", info, err)
+		return err
+	}
+	logrus.Infof("create fx withdrawal error msg record[%v] create success.", info)
+	return nil
+}
+
+func GetWithdrawalRecordErrorListCount() (int64, error) {
+	count, err := x.Count(&WithdrawalRecordError{})
+	if err != nil {
+		logrus.Errorf("get withdrawal error msg record list count error: %v", err)
+		return 0, err
+	}
+	return count, nil
+}
+
+func GetWithdrawalRecordErrorList(offset, num int64) ([]WithdrawalRecordError, error) {
+	var list []WithdrawalRecordError
+	var err error
+	err = x.Desc("created_at").Limit(int(num), int(offset)).Find(&list)
+	if err != nil {
+		logrus.Errorf("get withdrawal error msg record list error: %v", err)
+		return nil, err
+	}
+	return list, nil
+}
+
+func GetWithdrawalRecordErrorListFromName(name string) ([]WithdrawalRecordError, error) {
+	var list []WithdrawalRecordError
+	var err error
+	err = x.Where("name like ?", name).Find(&list)
+	//results, err := x.Query("select * from withdrawal_record_error where name like '%?%'", name)
+	if err != nil {
+		logrus.Errorf("get withdrawal error msg record list from name[%s] error: %v", name, err)
+		return nil, err
+	}
+	return list, nil
 }

@@ -100,7 +100,7 @@ func (we *WechatExt) Withdrawal(info *WithdrawalReq) error {
 	}
 	if response.Code != WECHAT_RESPONSE_OK {
 		logrus.Errorf("wechat withdrawal error: %v", response)
-		return fmt.Errorf("wechat withdrawal error: %s", response.Msg)
+		return fmt.Errorf("wechat withdrawal error: %v", response)
 	}
 
 	return nil
